@@ -1,4 +1,8 @@
-export type MonsterType = 'Fire' | 'Water' | 'Electric' | 'Grass' | 'Shadow' | 'Meme';
+export type PokeType = 'Fire' | 'Water' | 'Electric' | 'Grass' | 'Shadow' | 'Meme';
+
+// Backwards compatibility aliases
+export type MonsterType = PokeType;
+export type Monster = Poke;
 
 export type Rarity = 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary';
 
@@ -8,12 +12,12 @@ export interface Move {
   description?: string;
 }
 
-export interface Monster {
+export interface Poke {
   id: string;
   name: string;
   ticker: string;
   description: string;
-  type: MonsterType;
+  type: PokeType;
   hp: number;
   imageUrl: string;
   moves: Move[];
@@ -31,14 +35,14 @@ export interface Monster {
 export interface Template {
   id: string;
   name: string;
-  type: MonsterType;
+  type: PokeType;
   imageUrl: string;
   baseMoves: Move[];
   rarity: Rarity;
   hp: number;
 }
 
-export const TYPE_COLORS: Record<MonsterType, string> = {
+export const TYPE_COLORS: Record<PokeType, string> = {
   Fire: 'fire',
   Water: 'water',
   Electric: 'electric',

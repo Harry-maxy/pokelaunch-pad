@@ -1,20 +1,26 @@
 import { supabase } from '@/integrations/supabase/client';
-import { Monster, Template, MonsterType, Rarity, Move } from '@/types/monster';
+import { Poke, Template, PokeType, Rarity, Move, Monster, MonsterType } from '@/types/monster';
+
+// Backwards compatibility aliases
+export const fetchMonsters = fetchPokes;
+export const fetchMonster = fetchPoke;
+export const createMonster = createPoke;
+export const generateMonsterImage = generatePokeImage;
 
 // Type mappings for database enums
-type DbMonsterType = 'Fire' | 'Water' | 'Electric' | 'Grass' | 'Shadow' | 'Meme';
-type DbMonsterRarity = 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary';
+type DbPokeType = 'Fire' | 'Water' | 'Electric' | 'Grass' | 'Shadow' | 'Meme';
+type DbPokeRarity = 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary';
 
-interface DbMonster {
+interface DbPoke {
   id: string;
   name: string;
   ticker: string;
   description: string | null;
-  type: DbMonsterType;
+  type: DbPokeType;
   hp: number;
   image_url: string | null;
   moves: Move[] | null;
-  rarity: DbMonsterRarity;
+  rarity: DbPokeRarity;
   market_cap: number | null;
   evolution_stage: number | null;
   pump_url: string | null;
@@ -30,21 +36,21 @@ interface DbMonster {
 interface DbTemplate {
   id: string;
   name: string;
-  type: DbMonsterType;
+  type: DbPokeType;
   image_url: string | null;
   base_moves: Move[] | null;
-  rarity: DbMonsterRarity;
+  rarity: DbPokeRarity;
   hp: number;
   created_at: string;
 }
 
-function dbMonsterToMonster(db: DbMonster): Monster {
+function dbPokeToPoke(db: DbPoke): Poke {
   return {
     id: db.id,
     name: db.name,
     ticker: db.ticker,
     description: db.description || '',
-    type: db.type as MonsterType,
+    type: db.type as PokeType,
     hp: db.hp,
     imageUrl: db.image_url || '/placeholder.svg',
     moves: (db.moves as Move[]) || [],
@@ -72,7 +78,7 @@ function dbTemplateToTemplate(db: DbTemplate): Template {
   };
 }
 
-export async function fetchMonsters(filter?: string): Promise<Monster[]> {
+export async function fetchPokes(filter?: string): Promise<Poke[]> {
   let query = supabase.from('monsters').select('*');
   
   if (filter === 'trending') {
@@ -81,7 +87,7 @@ export async function fetchMonsters(filter?: string): Promise<Monster[]> {
     query = query.eq('evolution_stage', 4);
   } else if (filter && filter !== 'all' && filter !== 'new') {
     const typeFilter = filter.charAt(0).toUpperCase() + filter.slice(1);
-    query = query.eq('type', typeFilter as DbMonsterType);
+    query = query.eq('type', typeFilter as DbPokeType);
   }
   
   query = query.order('created_at', { ascending: false });
@@ -89,14 +95,14 @@ export async function fetchMonsters(filter?: string): Promise<Monster[]> {
   const { data, error } = await query;
   
   if (error) {
-    console.error('Error fetching monsters:', error);
+    console.error('Error fetching pokes:', error);
     return [];
   }
   
-  return (data as unknown as DbMonster[]).map(dbMonsterToMonster);
+  return (data as unknown as DbPoke[]).map(dbPokeToPoke);
 }
 
-export async function fetchMonster(id: string): Promise<Monster | null> {
+export async function fetchPoke(id: string): Promise<Poke | null> {
   const { data, error } = await supabase
     .from('monsters')
     .select('*')
@@ -104,11 +110,11 @@ export async function fetchMonster(id: string): Promise<Monster | null> {
     .maybeSingle();
   
   if (error || !data) {
-    console.error('Error fetching monster:', error);
+    console.error('Error fetching poke:', error);
     return null;
   }
   
-  return dbMonsterToMonster(data as unknown as DbMonster);
+  return dbPokeToPoke(data as unknown as DbPoke);
 }
 
 export async function fetchTemplates(): Promise<Template[]> {
@@ -133,37 +139,37 @@ function generateWallet(): string {
   return result;
 }
 
-export async function createMonster(
+export async function createPoke(
   userId: string,
-  monsterData: {
+  pokeData: {
     name: string;
     ticker: string;
     description: string;
-    type: MonsterType;
+    type: PokeType;
     hp: number;
     imageUrl: string;
     moves: Move[];
     rarity: Rarity;
   }
-): Promise<Monster | null> {
+): Promise<Poke | null> {
   const initialMarketCap = Math.floor(Math.random() * 50000) + 5000;
-  const monsterId = crypto.randomUUID();
+  const pokeId = crypto.randomUUID();
   
   const { data, error } = await supabase
     .from('monsters')
     .insert({
-      id: monsterId,
-      name: monsterData.name,
-      ticker: monsterData.ticker,
-      description: monsterData.description,
-      type: monsterData.type as DbMonsterType,
-      hp: monsterData.hp,
-      image_url: monsterData.imageUrl,
-      moves: monsterData.moves as unknown as never,
-      rarity: monsterData.rarity as DbMonsterRarity,
+      id: pokeId,
+      name: pokeData.name,
+      ticker: pokeData.ticker,
+      description: pokeData.description,
+      type: pokeData.type as DbPokeType,
+      hp: pokeData.hp,
+      image_url: pokeData.imageUrl,
+      moves: pokeData.moves as unknown as never,
+      rarity: pokeData.rarity as DbPokeRarity,
       market_cap: initialMarketCap,
       evolution_stage: 1,
-      pump_url: `https://pump.fun/launch/${monsterId}`,
+      pump_url: `https://pump.fun/launch/${pokeId}`,
       creator_id: userId,
       creator_wallet: generateWallet(),
       volume_24h: Math.floor(Math.random() * 10000) + 500,
@@ -174,17 +180,17 @@ export async function createMonster(
     .single();
   
   if (error) {
-    console.error('Error creating monster:', error);
+    console.error('Error creating poke:', error);
     return null;
   }
   
-  return dbMonsterToMonster(data as unknown as DbMonster);
+  return dbPokeToPoke(data as unknown as DbPoke);
 }
 
-export async function generateMonsterImage(prompt: string, monsterType: MonsterType): Promise<string | null> {
+export async function generatePokeImage(prompt: string, pokeType: PokeType): Promise<string | null> {
   try {
     const { data, error } = await supabase.functions.invoke('generate-monster-image', {
-      body: { prompt, monsterType }
+      body: { prompt, monsterType: pokeType }
     });
     
     if (error) {

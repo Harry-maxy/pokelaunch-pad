@@ -1,13 +1,13 @@
-import { Monster, Template, MonsterType, Rarity, Move, generateWallet, getEvolutionStage } from '@/types/monster';
+import { Poke, Template, PokeType, Rarity, Move, generateWallet, getEvolutionStage } from '@/types/monster';
 
-const MONSTER_NAMES = [
+const POKE_NAMES = [
   'Flamezard', 'Aquadrake', 'Voltspark', 'Leafmaw', 'Shadowfang', 'Memechamp',
   'Infernotail', 'Tidalwave', 'Thunderclaw', 'Vinelash', 'Voidwalker', 'Gigapepe',
   'Blazewing', 'Frostbite', 'Staticshock', 'Thornback', 'Nightshade', 'Dankmaster',
   'Pyrodragon', 'Icebreaker', 'Zapstrike', 'Florahorn', 'Phantomsteel', 'Lolking'
 ];
 
-const MOVE_NAMES: Record<MonsterType, string[]> = {
+const MOVE_NAMES: Record<PokeType, string[]> = {
   Fire: ['Flame Burst', 'Inferno Blast', 'Burn Strike', 'Fire Tornado', 'Magma Surge'],
   Water: ['Hydro Pump', 'Tidal Wave', 'Aqua Jet', 'Ice Beam', 'Tsunami Crash'],
   Electric: ['Thunder Shock', 'Volt Tackle', 'Lightning Strike', 'Spark Storm', 'Electro Ball'],
@@ -16,7 +16,7 @@ const MOVE_NAMES: Record<MonsterType, string[]> = {
   Meme: ['Dank Attack', 'HODL Power', 'Moon Shot', 'Diamond Hands', 'Rug Pull'],
 };
 
-function generateMove(type: MonsterType): Move {
+function generateMove(type: PokeType): Move {
   const moves = MOVE_NAMES[type];
   return {
     name: moves[Math.floor(Math.random() * moves.length)],
@@ -24,20 +24,20 @@ function generateMove(type: MonsterType): Move {
   };
 }
 
-function generateMonster(index: number): Monster {
-  const types: MonsterType[] = ['Fire', 'Water', 'Electric', 'Grass', 'Shadow', 'Meme'];
+function generatePoke(index: number): Poke {
+  const types: PokeType[] = ['Fire', 'Water', 'Electric', 'Grass', 'Shadow', 'Meme'];
   const rarities: Rarity[] = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
   
   const type = types[Math.floor(Math.random() * types.length)];
   const rarity = rarities[Math.floor(Math.random() * rarities.length)];
-  const name = MONSTER_NAMES[index % MONSTER_NAMES.length];
+  const name = POKE_NAMES[index % POKE_NAMES.length];
   const marketCap = Math.floor(Math.random() * 1500000) + 1000;
   
   return {
-    id: `monster-${index}`,
+    id: `poke-${index}`,
     name,
     ticker: name.toUpperCase().slice(0, 4),
-    description: `A powerful ${type.toLowerCase()} type monster with incredible abilities. Born from the blockchain, destined for the moon.`,
+    description: `A powerful ${type.toLowerCase()} type poke with incredible abilities. Born from the blockchain, destined for the moon.`,
     type,
     hp: Math.floor(Math.random() * 150) + 50,
     imageUrl: `/placeholder.svg`,
@@ -45,7 +45,7 @@ function generateMonster(index: number): Monster {
     rarity,
     marketCap,
     evolutionStage: getEvolutionStage(marketCap),
-    pumpUrl: `https://pump.fun/launch/monster-${index}`,
+    pumpUrl: `https://pump.fun/launch/poke-${index}`,
     creatorWallet: generateWallet(),
     createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
     volume24h: Math.floor(Math.random() * 100000) + 1000,
@@ -54,7 +54,10 @@ function generateMonster(index: number): Monster {
   };
 }
 
-export const MOCK_MONSTERS: Monster[] = Array.from({ length: 24 }, (_, i) => generateMonster(i));
+export const MOCK_POKES: Poke[] = Array.from({ length: 24 }, (_, i) => generatePoke(i));
+
+// Backwards compatibility alias
+export const MOCK_MONSTERS = MOCK_POKES;
 
 export const MOCK_TEMPLATES: Template[] = [
   {
@@ -167,16 +170,19 @@ export const MOCK_TEMPLATES: Template[] = [
   },
 ];
 
-export function getFilteredMonsters(filter: string): Monster[] {
+export function getFilteredPokes(filter: string): Poke[] {
   if (filter === 'all' || filter === 'new') {
-    return [...MOCK_MONSTERS].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return [...MOCK_POKES].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
   if (filter === 'trending') {
-    return [...MOCK_MONSTERS].sort((a, b) => b.marketCap - a.marketCap);
+    return [...MOCK_POKES].sort((a, b) => b.marketCap - a.marketCap);
   }
   if (filter === 'legendary') {
-    return MOCK_MONSTERS.filter(m => m.evolutionStage === 4);
+    return MOCK_POKES.filter(p => p.evolutionStage === 4);
   }
-  const typeFilter = filter.charAt(0).toUpperCase() + filter.slice(1) as MonsterType;
-  return MOCK_MONSTERS.filter(m => m.type === typeFilter);
+  const typeFilter = filter.charAt(0).toUpperCase() + filter.slice(1) as PokeType;
+  return MOCK_POKES.filter(p => p.type === typeFilter);
 }
+
+// Backwards compatibility alias
+export const getFilteredMonsters = getFilteredPokes;
