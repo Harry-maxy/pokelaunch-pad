@@ -2,77 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 @layer base {
   :root {
-    --background: 220 20% 6%;
+    /* Core Pokémon-inspired palette */
+    --background: 0 0% 6%;
     --foreground: 0 0% 98%;
 
-    --card: 220 20% 10%;
+    --card: 0 0% 10%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 20% 8%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 142 76% 56%;
-    --primary-foreground: 220 20% 6%;
+    /* Pokéball Red as primary */
+    --primary: 0 100% 56%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 20% 14%;
+    --secondary: 0 0% 14%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 55%;
 
-    --accent: 142 76% 56%;
-    --accent-foreground: 220 20% 6%;
+    /* Electric Yellow as accent */
+    --accent: 48 95% 57%;
+    --accent-foreground: 0 0% 6%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 18%;
-    --ring: 142 76% 56%;
+    --border: 0 0% 20%;
+    --input: 0 0% 18%;
+    --ring: 0 100% 56%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Type Colors */
-    --type-fire: 14 100% 57%;
-    --type-water: 200 100% 50%;
-    --type-electric: 48 100% 50%;
-    --type-grass: 120 60% 45%;
-    --type-shadow: 280 60% 50%;
-    --type-meme: 142 76% 56%;
+    /* Pokémon Type Colors */
+    --type-fire: 14 100% 50%;
+    --type-water: 200 100% 55%;
+    --type-electric: 48 100% 55%;
+    --type-grass: 130 65% 45%;
+    --type-shadow: 270 50% 40%;
+    --type-meme: 160 100% 50%;
+
+    /* Special Colors */
+    --legendary-gold: 45 100% 50%;
+    --neon-cyan: 185 100% 60%;
+    --pokeball-red: 0 100% 56%;
+    --steel-gray: 0 0% 12%;
 
     /* Glow Effects */
-    --glow-fire: 0 0 30px hsl(14 100% 57% / 0.5);
-    --glow-water: 0 0 30px hsl(200 100% 50% / 0.5);
-    --glow-electric: 0 0 30px hsl(48 100% 50% / 0.5);
-    --glow-grass: 0 0 30px hsl(120 60% 45% / 0.5);
-    --glow-shadow: 0 0 30px hsl(280 60% 50% / 0.5);
-    --glow-meme: 0 0 30px hsl(142 76% 56% / 0.5);
-    --glow-primary: 0 0 40px hsl(142 76% 56% / 0.4);
+    --glow-fire: 0 0 30px hsl(14 100% 50% / 0.6);
+    --glow-water: 0 0 30px hsl(200 100% 55% / 0.6);
+    --glow-electric: 0 0 30px hsl(48 100% 55% / 0.6);
+    --glow-grass: 0 0 30px hsl(130 65% 45% / 0.6);
+    --glow-shadow: 0 0 30px hsl(270 50% 40% / 0.6);
+    --glow-meme: 0 0 30px hsl(160 100% 50% / 0.6);
+    --glow-primary: 0 0 40px hsl(0 100% 56% / 0.5);
+    --glow-legendary: 0 0 50px hsl(45 100% 50% / 0.7);
+    --glow-cyan: 0 0 40px hsl(185 100% 60% / 0.5);
 
     /* Gradients */
-    --gradient-fire: linear-gradient(135deg, hsl(14 100% 57%), hsl(30 100% 50%));
-    --gradient-water: linear-gradient(135deg, hsl(200 100% 50%), hsl(220 100% 60%));
-    --gradient-electric: linear-gradient(135deg, hsl(48 100% 50%), hsl(40 100% 60%));
-    --gradient-grass: linear-gradient(135deg, hsl(120 60% 45%), hsl(140 70% 40%));
-    --gradient-shadow: linear-gradient(135deg, hsl(280 60% 50%), hsl(300 70% 40%));
-    --gradient-meme: linear-gradient(135deg, hsl(142 76% 56%), hsl(160 80% 45%));
-    --gradient-legendary: linear-gradient(135deg, #FFD700, #FFA500, #FF6347, #FF1493, #9400D3);
-    --gradient-card-bg: linear-gradient(180deg, hsl(220 20% 12%), hsl(220 20% 8%));
-    --gradient-hero: linear-gradient(135deg, hsl(220 20% 6%) 0%, hsl(220 25% 10%) 50%, hsl(220 20% 6%) 100%);
+    --gradient-fire: linear-gradient(135deg, #FF1F1F, #FF6B35, #FFA500);
+    --gradient-water: linear-gradient(135deg, #3CA9F4, #00BFFF, #87CEEB);
+    --gradient-electric: linear-gradient(135deg, #F7D32C, #FFE135, #FFF44F);
+    --gradient-grass: linear-gradient(135deg, #59CC57, #7ED957, #90EE90);
+    --gradient-shadow: linear-gradient(135deg, #5A3E8B, #8B5CF6, #A855F7);
+    --gradient-meme: linear-gradient(135deg, #31F4FF, #00FF9F, #39FF14);
+    --gradient-legendary: linear-gradient(135deg, #FFD700, #FFA500, #FF6347, #FF1493, #9400D3, #4B0082);
+    --gradient-card-bg: linear-gradient(180deg, hsl(0 0% 12%), hsl(0 0% 8%));
+    --gradient-hero: radial-gradient(ellipse at 50% 0%, hsl(0 0% 15%) 0%, hsl(0 0% 6%) 70%);
+    --gradient-pokeball: linear-gradient(180deg, #FF1F1F 0%, #FF1F1F 45%, #1E1E1E 45%, #1E1E1E 55%, #FFFFFF 55%, #FFFFFF 100%);
 
     /* Sidebar */
-    --sidebar-background: 220 20% 8%;
+    --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 142 76% 56%;
-    --sidebar-primary-foreground: 220 20% 6%;
-    --sidebar-accent: 220 20% 14%;
+    --sidebar-primary: 0 100% 56%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 142 76% 56%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 100% 56%;
   }
 }
 
@@ -82,12 +92,32 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Exo 2', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Outfit', sans-serif;
+    background-image: 
+      radial-gradient(circle at 20% 20%, hsl(0 100% 56% / 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, hsl(270 50% 40% / 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, hsl(48 100% 55% / 0.02) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    z-index: 9999;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
   }
 
   code, .mono {
@@ -96,57 +126,126 @@
 }
 
 @layer components {
+  /* Card Frames by Type */
   .card-frame-fire {
-    @apply border-2;
+    @apply border-2 rounded-2xl;
     border-color: hsl(var(--type-fire));
-    box-shadow: var(--glow-fire);
+    box-shadow: var(--glow-fire), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
   .card-frame-water {
-    @apply border-2;
+    @apply border-2 rounded-2xl;
     border-color: hsl(var(--type-water));
-    box-shadow: var(--glow-water);
+    box-shadow: var(--glow-water), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
   .card-frame-electric {
-    @apply border-2;
+    @apply border-2 rounded-2xl;
     border-color: hsl(var(--type-electric));
-    box-shadow: var(--glow-electric);
+    box-shadow: var(--glow-electric), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
   .card-frame-grass {
-    @apply border-2;
+    @apply border-2 rounded-2xl;
     border-color: hsl(var(--type-grass));
-    box-shadow: var(--glow-grass);
+    box-shadow: var(--glow-grass), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
   .card-frame-shadow {
-    @apply border-2;
+    @apply border-2 rounded-2xl;
     border-color: hsl(var(--type-shadow));
-    box-shadow: var(--glow-shadow);
+    box-shadow: var(--glow-shadow), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
   .card-frame-meme {
-    @apply border-2;
+    @apply border-2 rounded-2xl;
     border-color: hsl(var(--type-meme));
-    box-shadow: var(--glow-meme);
+    box-shadow: var(--glow-meme), inset 0 1px 0 rgba(255,255,255,0.1);
   }
 
+  /* Holographic Effect */
   .holographic {
     background: linear-gradient(
       125deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.1) 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.15) 75%,
+      rgba(255, 215, 0, 0.1) 15%,
+      rgba(255, 105, 180, 0.1) 30%,
+      transparent 45%,
+      rgba(0, 191, 255, 0.1) 60%,
+      rgba(50, 205, 50, 0.1) 75%,
       transparent 100%
     );
-    background-size: 200% 200%;
-    animation: holographic-shimmer 3s ease-in-out infinite;
+    background-size: 400% 400%;
+    animation: holographic-shimmer 4s ease-in-out infinite;
   }
 
+  /* Glossy 3D Buttons */
+  .btn-pokemon {
+    @apply relative overflow-hidden font-semibold transition-all duration-300;
+    background: linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(0 100% 45%) 100%);
+    box-shadow: 
+      0 4px 0 hsl(0 100% 35%),
+      0 6px 20px hsl(0 100% 56% / 0.4),
+      inset 0 2px 0 rgba(255,255,255,0.2);
+    border-radius: 9999px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .btn-pokemon:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 0 hsl(0 100% 35%),
+      0 10px 30px hsl(0 100% 56% / 0.5),
+      inset 0 2px 0 rgba(255,255,255,0.3);
+  }
+
+  .btn-pokemon:active {
+    transform: translateY(2px);
+    box-shadow: 
+      0 2px 0 hsl(0 100% 35%),
+      0 4px 15px hsl(0 100% 56% / 0.3),
+      inset 0 2px 0 rgba(255,255,255,0.1);
+  }
+
+  .btn-legendary {
+    @apply relative overflow-hidden font-bold;
+    background: var(--gradient-legendary);
+    background-size: 200% 200%;
+    animation: legendary-shift 3s ease-in-out infinite;
+    box-shadow: 
+      0 4px 0 hsl(30 100% 35%),
+      var(--glow-legendary),
+      inset 0 2px 0 rgba(255,255,255,0.3);
+    border-radius: 9999px;
+  }
+
+  .btn-legendary:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+      0 6px 0 hsl(30 100% 35%),
+      0 0 60px hsl(45 100% 50% / 0.8),
+      inset 0 2px 0 rgba(255,255,255,0.4);
+  }
+
+  /* Glow Effects */
   .glow-text {
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.5), 0 0 20px hsl(var(--primary) / 0.3);
+    text-shadow: 
+      0 0 10px hsl(var(--primary) / 0.5), 
+      0 0 20px hsl(var(--primary) / 0.3),
+      0 0 40px hsl(var(--primary) / 0.2);
+  }
+
+  .glow-text-gold {
+    text-shadow: 
+      0 0 10px hsl(var(--legendary-gold) / 0.6), 
+      0 0 20px hsl(var(--legendary-gold) / 0.4),
+      0 0 40px hsl(var(--legendary-gold) / 0.3);
+  }
+
+  .glow-text-cyan {
+    text-shadow: 
+      0 0 10px hsl(var(--neon-cyan) / 0.6), 
+      0 0 20px hsl(var(--neon-cyan) / 0.4);
   }
 
   .btn-glow {
@@ -155,68 +254,178 @@
   }
 
   .btn-glow:hover {
-    box-shadow: 0 0 60px hsl(142 76% 56% / 0.6);
+    box-shadow: 0 0 60px hsl(0 100% 56% / 0.7);
     transform: translateY(-2px);
   }
 
+  /* Type Badges */
   .type-badge {
-    @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+    @apply px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   }
 
   .type-fire {
     background: var(--gradient-fire);
-    @apply text-white;
+    box-shadow: var(--glow-fire);
   }
 
   .type-water {
     background: var(--gradient-water);
-    @apply text-white;
+    box-shadow: var(--glow-water);
   }
 
   .type-electric {
     background: var(--gradient-electric);
     @apply text-black;
+    box-shadow: var(--glow-electric);
+    text-shadow: none;
   }
 
   .type-grass {
     background: var(--gradient-grass);
-    @apply text-white;
+    box-shadow: var(--glow-grass);
   }
 
   .type-shadow {
     background: var(--gradient-shadow);
-    @apply text-white;
+    box-shadow: var(--glow-shadow);
   }
 
   .type-meme {
     background: var(--gradient-meme);
     @apply text-black;
+    box-shadow: var(--glow-meme);
+    text-shadow: none;
   }
 
+  /* Card Hover Effects */
   .card-hover {
     @apply transition-all duration-300 ease-out;
+    transform-style: preserve-3d;
+    perspective: 1000px;
   }
 
   .card-hover:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-12px) rotateX(5deg) scale(1.02);
   }
 
+  /* Card Tilt Effect */
+  .card-tilt {
+    @apply transition-transform duration-200;
+    transform-style: preserve-3d;
+  }
+
+  .card-tilt:hover {
+    transform: perspective(1000px) rotateY(5deg) rotateX(-5deg) translateY(-8px);
+  }
+
+  /* Filter Chips - Pokedex Style */
   .filter-chip {
-    @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer;
-    @apply bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground;
+    @apply px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer;
+    @apply bg-secondary/80 text-secondary-foreground border border-border/50;
+    box-shadow: 0 2px 0 hsl(0 0% 10%), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .filter-chip:hover {
+    @apply bg-primary/20 border-primary/50;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 hsl(0 0% 10%), 0 0 15px hsl(var(--primary) / 0.2);
   }
 
   .filter-chip.active {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary text-primary-foreground border-primary;
+    box-shadow: 0 2px 0 hsl(0 100% 35%), var(--glow-primary);
   }
 
+  /* Evolution XP Bar */
   .evolution-bar {
-    @apply h-2 rounded-full bg-secondary overflow-hidden;
+    @apply h-3 rounded-full overflow-hidden;
+    background: linear-gradient(180deg, hsl(0 0% 15%), hsl(0 0% 10%));
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
   }
 
   .evolution-progress {
-    @apply h-full rounded-full transition-all duration-500;
+    @apply h-full rounded-full transition-all duration-700;
     background: var(--gradient-legendary);
+    background-size: 200% 100%;
+    animation: xp-shimmer 2s linear infinite;
+    box-shadow: 0 0 10px hsl(45 100% 50% / 0.5);
+  }
+
+  /* Pokedex Panel */
+  .pokedex-panel {
+    @apply relative rounded-2xl overflow-hidden;
+    background: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 8%));
+    border: 2px solid hsl(0 0% 20%);
+    box-shadow: 
+      0 10px 40px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .pokedex-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-legendary);
+    opacity: 0.5;
+  }
+
+  /* Trainer Badge Ranks */
+  .badge-bronze {
+    background: linear-gradient(135deg, #CD7F32, #8B4513);
+    box-shadow: 0 0 15px rgba(205, 127, 50, 0.4);
+  }
+
+  .badge-silver {
+    background: linear-gradient(135deg, #C0C0C0, #808080);
+    box-shadow: 0 0 15px rgba(192, 192, 192, 0.4);
+  }
+
+  .badge-gold {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+
+  .badge-legendary {
+    background: var(--gradient-legendary);
+    background-size: 200% 200%;
+    animation: legendary-shift 3s ease-in-out infinite;
+    box-shadow: var(--glow-legendary);
+  }
+
+  /* Energy Border Animation */
+  .energy-border {
+    @apply relative;
+  }
+
+  .energy-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: var(--gradient-legendary);
+    background-size: 300% 300%;
+    animation: energy-flow 2s linear infinite;
+    z-index: -1;
+    opacity: 0.8;
+  }
+
+  /* Sparkle Effect */
+  .sparkle {
+    position: relative;
+  }
+
+  .sparkle::after {
+    content: '✦';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    color: hsl(var(--legendary-gold));
+    animation: sparkle-pulse 1.5s ease-in-out infinite;
   }
 }
 
@@ -228,14 +437,36 @@
     background-clip: text;
   }
 
+  .text-gradient-fire {
+    background: var(--gradient-fire);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-electric {
+    background: var(--gradient-electric);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-meme {
+    background: var(--gradient-meme);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   .bg-gradient-hero {
     background: var(--gradient-hero);
   }
 
   .bg-pattern {
     background-image: 
-      radial-gradient(circle at 25% 25%, hsl(142 76% 56% / 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, hsl(280 60% 50% / 0.03) 0%, transparent 50%);
+      radial-gradient(circle at 25% 25%, hsl(0 100% 56% / 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, hsl(270 50% 40% / 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 50% 10%, hsl(48 100% 55% / 0.03) 0%, transparent 40%);
   }
 
   .scrollbar-hide {
@@ -246,8 +477,16 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Anime-style drop shadow for titles */
+  .title-shadow {
+    text-shadow: 
+      3px 3px 0 hsl(0 0% 0% / 0.3),
+      -1px -1px 0 hsl(0 0% 100% / 0.1);
+  }
 }
 
+/* Keyframe Animations */
 @keyframes holographic-shimmer {
   0% {
     background-position: 0% 0%;
@@ -260,21 +499,90 @@
   }
 }
 
+@keyframes legendary-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes xp-shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes energy-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
 @keyframes float {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-15px);
   }
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px hsl(142 76% 56% / 0.4);
+    box-shadow: 0 0 20px hsl(var(--legendary-gold) / 0.4);
   }
   50% {
-    box-shadow: 0 0 40px hsl(142 76% 56% / 0.6);
+    box-shadow: 0 0 50px hsl(var(--legendary-gold) / 0.7);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(20px);
+    opacity: 0;
   }
 }
 
@@ -284,4 +592,23 @@
 
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.animate-slide-up-delay-1 {
+  animation: slide-up 0.6s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-slide-up-delay-2 {
+  animation: slide-up 0.6s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-slide-up-delay-3 {
+  animation: slide-up 0.6s ease-out 0.3s forwards;
+  opacity: 0;
 }

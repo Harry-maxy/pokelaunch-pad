@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, ArrowLeft, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import logo from '@/assets/logo.svg';
 
@@ -61,74 +61,87 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background bg-pattern flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6 group">
-            <img src={logo} alt="PokeLaunch" className="w-12 h-12 group-hover:animate-pulse-glow transition-all" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-gradient-hero" />
+      <div className="absolute inset-0 bg-pattern opacity-50" />
+      
+      {/* Floating particles */}
+      <div className="absolute top-20 left-20 w-3 h-3 rounded-full bg-primary/40 animate-float" />
+      <div className="absolute bottom-40 right-32 w-4 h-4 rounded-full bg-accent/30 animate-float" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/3 left-1/4 w-2 h-2 rounded-full bg-type-electric/40 animate-float" style={{ animationDelay: '0.5s' }} />
+      
+      <div className="relative w-full max-w-md animate-slide-up">
+        <div className="mb-10 text-center">
+          <Link to="/" className="inline-flex items-center gap-3 mb-8 group">
+            <img 
+              src={logo} 
+              alt="PokeLaunch" 
+              className="w-16 h-16 group-hover:animate-pulse-glow transition-all rounded-xl" 
+            />
             <div className="text-left">
-              <h1 className="font-display font-bold text-2xl text-foreground">
+              <h1 className="font-display font-bold text-3xl text-foreground">
                 Poke<span className="text-primary">Launch</span>
               </h1>
-              <p className="text-xs text-muted-foreground">Monster Token Launchpad</p>
+              <p className="text-sm text-neon-cyan font-medium">Monster Token Launchpad</p>
             </div>
           </Link>
           
-          <h2 className="font-display text-3xl font-bold text-foreground">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
+          <h2 className="font-display text-4xl font-bold text-foreground mb-2">
+            {isLogin ? 'Welcome Back' : 'Join the Revolution'}
           </h2>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground">
             {isLogin 
               ? 'Sign in to manage your monsters' 
-              : 'Join the monster revolution'}
+              : 'Create your account and start launching'}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-card rounded-xl p-6 border border-border space-y-4">
+        <form onSubmit={handleSubmit} className="pokedex-panel p-8 space-y-5">
           {!isLogin && (
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-foreground font-medium">Username</Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="username"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="MonsterMaster"
-                  className="pl-10"
+                  className="pl-11 py-6 rounded-xl bg-muted/50 border-border focus:border-primary"
                 />
               </div>
             </div>
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-foreground font-medium">Email</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="trainer@pokelaunch.app"
-                className="pl-10"
+                className="pl-11 py-6 rounded-xl bg-muted/50 border-border focus:border-primary"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-foreground font-medium">Password</Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="pl-10"
+                className="pl-11 py-6 rounded-xl bg-muted/50 border-border focus:border-primary"
                 required
                 minLength={6}
               />
@@ -137,18 +150,28 @@ export default function Auth() {
 
           <Button 
             type="submit" 
-            className="w-full btn-glow"
+            className="w-full btn-pokemon py-6 text-lg mt-6"
             disabled={loading}
           >
-            {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 animate-spin" />
+                Please wait...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5" />
+                {isLogin ? 'Sign In' : 'Create Account'}
+              </span>
+            )}
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-8 text-center">
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-primary hover:underline"
+            className="text-accent hover:text-accent/80 font-medium transition-colors"
           >
             {isLogin 
               ? "Don't have an account? Sign up" 
@@ -156,8 +179,8 @@ export default function Auth() {
           </button>
         </div>
 
-        <div className="mt-4 text-center">
-          <Link to="/" className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+        <div className="mt-6 text-center">
+          <Link to="/" className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Link>
