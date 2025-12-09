@@ -7,11 +7,11 @@ import {
   Layout, 
   Trophy, 
   Sparkles,
-  Zap,
   LogIn,
   LogOut,
   User
 } from 'lucide-react';
+import logo from '@/assets/logo.svg';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -40,9 +40,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="p-4 border-b border-sidebar-border">
         <NavLink to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center group-hover:animate-pulse-glow transition-all">
-            <Zap className="w-6 h-6 text-primary-foreground" />
-          </div>
+          <img src={logo} alt="PokeLaunch" className="w-10 h-10 group-hover:animate-pulse-glow transition-all" />
           <div>
             <h1 className="font-display font-bold text-lg text-sidebar-foreground">
               Poke<span className="text-primary">Launch</span>
