@@ -81,7 +81,7 @@ export async function fetchMonsters(filter?: string): Promise<Monster[]> {
     query = query.eq('evolution_stage', 4);
   } else if (filter && filter !== 'all' && filter !== 'new') {
     const typeFilter = filter.charAt(0).toUpperCase() + filter.slice(1);
-    query = query.eq('type', typeFilter);
+    query = query.eq('type', typeFilter as DbMonsterType);
   }
   
   query = query.order('created_at', { ascending: false });
