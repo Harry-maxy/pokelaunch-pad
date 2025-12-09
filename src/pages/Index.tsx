@@ -53,7 +53,7 @@ const Index = () => {
 
               <h1 className="font-display text-5xl lg:text-6xl font-bold text-foreground title-shadow leading-tight">
                 Launch Your <br />
-                <span className="text-gradient-legendary">Monster</span> Token
+                <span className="text-gradient-legendary">Poke</span> Token
               </h1>
               
               <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
@@ -64,7 +64,7 @@ const Index = () => {
               <div className="flex flex-wrap gap-4 pt-4">
                 <Button size="lg" className="btn-pokemon px-8 py-6 text-lg" onClick={() => navigate('/create')}>
                   <Zap className="w-5 h-5 mr-2" />
-                  Create Monster
+                  Create Poke
                 </Button>
                 <Button size="lg" variant="secondary" className="px-6 py-6 border-2 border-border hover:border-accent/50 hover:bg-accent/10 transition-all" onClick={() => navigate('/import')}>
                   <Download className="w-5 h-5 mr-2" />
@@ -80,7 +80,7 @@ const Index = () => {
               <div className="flex gap-8 pt-6">
                 <div className="text-center">
                   <p className="font-display text-3xl font-bold text-gradient-fire">{monsters.length}</p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Monsters</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Pokes</p>
                 </div>
                 <div className="text-center">
                   <p className="font-display text-3xl font-bold text-gradient-electric">{legendaryMonsters.length}</p>
@@ -95,7 +95,7 @@ const Index = () => {
             
             {/* Featured Card */}
             {trendingMonsters[0] && <div className="animate-float animate-slide-up-delay-2">
-                <PokemonCard monster={trendingMonsters[0]} size="lg" onClick={() => navigate(`/monster/${trendingMonsters[0].id}`)} />
+                <PokemonCard monster={trendingMonsters[0]} size="lg" onClick={() => navigate(`/poke/${trendingMonsters[0].id}`)} />
               </div>}
           </div>
         </div>
@@ -107,7 +107,7 @@ const Index = () => {
             <Loader2 className="w-12 h-12 animate-spin text-primary" />
             <div className="absolute inset-0 w-12 h-12 rounded-full bg-primary/20 animate-ping" />
           </div>
-          <p className="text-muted-foreground font-medium animate-pulse">Loading monsters...</p>
+          <p className="text-muted-foreground font-medium animate-pulse">Loading pokes...</p>
         </div> : <>
           {/* Trending Section */}
           {trendingMonsters.length > 0 && <section className="py-12 px-6 border-t border-border">
@@ -118,14 +118,14 @@ const Index = () => {
                   </div>
                   <div>
                     <h2 className="font-display text-3xl font-bold text-foreground">Trending</h2>
-                    <p className="text-sm text-muted-foreground">Top performing monsters</p>
+                    <p className="text-sm text-muted-foreground">Top performing pokes</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {trendingMonsters.map((monster, idx) => <div key={monster.id} className="animate-slide-up" style={{
               animationDelay: `${idx * 0.1}s`
             }}>
-                      <PokemonCard monster={monster} size="md" onClick={() => navigate(`/monster/${monster.id}`)} />
+                      <PokemonCard monster={monster} size="md" onClick={() => navigate(`/poke/${monster.id}`)} />
                     </div>)}
                 </div>
               </div>
@@ -156,7 +156,7 @@ const Index = () => {
                   {legendaryMonsters.map((monster, idx) => <div key={monster.id} className="animate-slide-up" style={{
               animationDelay: `${idx * 0.15}s`
             }}>
-                      <PokemonCard monster={monster} size="lg" onClick={() => navigate(`/monster/${monster.id}`)} />
+                      <PokemonCard monster={monster} size="lg" onClick={() => navigate(`/poke/${monster.id}`)} />
                     </div>)}
                 </div>
               </div>
@@ -171,7 +171,7 @@ const Index = () => {
                 </div>
                 <div>
                   <h2 className="font-display text-3xl font-bold text-foreground">Explore</h2>
-                  <p className="text-sm text-muted-foreground">Discover all monsters</p>
+                  <p className="text-sm text-muted-foreground">Discover all pokes</p>
                 </div>
               </div>
               
@@ -183,11 +183,11 @@ const Index = () => {
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
                     <Sparkles className="w-10 h-10 text-muted-foreground" />
                   </div>
-                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">No Monsters Found</h3>
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">No Pokes Found</h3>
                   <p className="text-muted-foreground mb-6">Be the first to create one and start the revolution!</p>
                   <Button onClick={() => navigate('/create')} className="btn-legendary px-8 py-4 text-lg">
                     <Zap className="w-5 h-5 mr-2" />
-                    Create Monster
+                    Create Poke
                   </Button>
                 </div>}
             </div>

@@ -1,32 +1,34 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Monster } from '@/types/monster';
+import { Poke } from '@/types/monster';
 import { PokemonCard } from './PokemonCard';
 import { ExternalLink, Copy, Check, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface LaunchSuccessModalProps {
-  monster: Monster | null;
+  poke?: Poke | null;
+  monster?: Poke | null;
   open: boolean;
   onClose: () => void;
 }
 
-export function LaunchSuccessModal({ monster, open, onClose }: LaunchSuccessModalProps) {
+export function LaunchSuccessModal({ poke, monster, open, onClose }: LaunchSuccessModalProps) {
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
-
-  if (!monster) return null;
+  
+  const item = poke || monster;
+  if (!item) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(monster.pumpUrl);
+    navigator.clipboard.writeText(item.pumpUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleViewMonster = () => {
+  const handleViewPoke = () => {
     onClose();
-    navigate(`/monster/${monster.id}`);
+    navigate(`/poke/${item.id}`);
   };
 
   return (
@@ -35,13 +37,13 @@ export function LaunchSuccessModal({ monster, open, onClose }: LaunchSuccessModa
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-display text-2xl text-foreground">
             <Sparkles className="w-6 h-6 text-primary animate-pulse" />
-            Monster Launched!
+            Poke Launched!
           </DialogTitle>
         </DialogHeader>
         
         <div className="flex flex-col items-center gap-6 py-4">
           <div className="animate-float">
-            <PokemonCard monster={monster} size="md" interactive={false} />
+            <PokemonCard monster={item} size="md" interactive={false} />
           </div>
           
           <div className="w-full space-y-4">
@@ -49,7 +51,7 @@ export function LaunchSuccessModal({ monster, open, onClose }: LaunchSuccessModa
               <p className="text-sm text-muted-foreground mb-2">Launch URL</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 text-sm font-mono text-primary truncate">
-                  {monster.pumpUrl}
+                  {item.pumpUrl}
                 </code>
                 <Button
                   variant="ghost"
@@ -70,16 +72,16 @@ export function LaunchSuccessModal({ monster, open, onClose }: LaunchSuccessModa
               <Button
                 variant="outline"
                 className="flex-1"
-                onClick={() => window.open(monster.pumpUrl, '_blank')}
+                onClick={() => window.open(item.pumpUrl, '_blank')}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 View on Pump
               </Button>
               <Button
                 className="flex-1 btn-glow"
-                onClick={handleViewMonster}
+                onClick={handleViewPoke}
               >
-                View Monster
+                View Poke
               </Button>
             </div>
           </div>

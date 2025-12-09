@@ -20,7 +20,7 @@ import logo from '@/assets/logo.svg';
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home', color: 'hover:text-primary' },
-  { to: '/create', icon: Zap, label: 'Create Monster', color: 'hover:text-accent' },
+  { to: '/create', icon: Zap, label: 'Create Poke', color: 'hover:text-accent' },
   { to: '/import', icon: Download, label: 'Import Stats', color: 'hover:text-type-water' },
   { to: '/templates', icon: Layout, label: 'Templates', color: 'hover:text-type-electric' },
   { to: '/leaderboard', icon: Trophy, label: 'Hall of Launches', color: 'hover:text-legendary-gold' },
@@ -50,7 +50,7 @@ export function Sidebar() {
             <h1 className="font-display font-bold text-xl text-sidebar-foreground">
               Poke<span className="text-primary">Launch</span>
             </h1>
-            <p className="text-[10px] text-neon-cyan font-medium tracking-wide">Monster Token Launchpad</p>
+            <p className="text-[10px] text-neon-cyan font-medium tracking-wide">Poke Token Launchpad</p>
           </div>
         </NavLink>
       </div>
@@ -84,7 +84,7 @@ export function Sidebar() {
           )}
         >
           <Sparkles className="w-5 h-5" />
-          Create Monster
+          Create Poke
         </NavLink>
       </div>
 
