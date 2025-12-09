@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label';
 import { PokemonCard } from '@/components/PokemonCard';
 import { TypeSelector } from '@/components/TypeSelector';
 import { LaunchSuccessModal } from '@/components/LaunchSuccessModal';
-import { useMonsterStore } from '@/store/monsterStore';
+import { useAuth } from '@/contexts/AuthContext';
+import { createMonster, generateMonsterImage } from '@/lib/api';
 import { Monster, MonsterType, Move, Rarity } from '@/types/monster';
-import { Rocket, Wand2, Upload, Shuffle } from 'lucide-react';
+import { Rocket, Wand2, Upload, Shuffle, Loader2, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 
 const RANDOM_NAMES = [
@@ -28,7 +29,7 @@ const RANDOM_MOVES: Record<MonsterType, Move[]> = {
 
 export default function CreateMonster() {
   const navigate = useNavigate();
-  const { addMonster } = useMonsterStore();
+  const { user } = useAuth();
   
   const [name, setName] = useState('');
   const [ticker, setTicker] = useState('');
@@ -42,6 +43,7 @@ export default function CreateMonster() {
   ]);
   const [rarity, setRarity] = useState<Rarity>('Common');
   const [isLaunching, setIsLaunching] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [launchedMonster, setLaunchedMonster] = useState<Monster | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -68,7 +70,39 @@ export default function CreateMonster() {
     setMoves(RANDOM_MOVES[type]);
   };
 
+  const handleGenerateImage = async () => {
+    if (!user) {
+      toast.error('Please sign in to generate images');
+      return;
+    }
+    
+    setIsGeneratingImage(true);
+    toast.info('Generating your unique monster artwork...');
+    
+    try {
+      const prompt = `${name || 'Powerful creature'} - ${description || 'A mysterious and powerful monster'}`;
+      const generatedUrl = await generateMonsterImage(prompt, type);
+      
+      if (generatedUrl) {
+        setImageUrl(generatedUrl);
+        toast.success('Monster artwork generated!');
+      } else {
+        toast.error('Failed to generate image. Try again.');
+      }
+    } catch (err) {
+      toast.error('Image generation failed');
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   const handleLaunch = async () => {
+    if (!user) {
+      toast.error('Please sign in to launch a monster');
+      navigate('/auth');
+      return;
+    }
+    
     if (!name || !ticker) {
       toast.error('Please enter a name and ticker');
       return;
@@ -76,30 +110,50 @@ export default function CreateMonster() {
 
     setIsLaunching(true);
     
-    // Simulate launch delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const newMonster = addMonster({
-      name,
-      ticker,
-      description: description || `A powerful ${type.toLowerCase()} type monster.`,
-      type,
-      hp,
-      imageUrl: imageUrl || '/placeholder.svg',
-      moves,
-      rarity,
-      marketCap: Math.floor(Math.random() * 50000) + 5000,
-    });
-    
-    setLaunchedMonster(newMonster);
-    setShowSuccessModal(true);
-    setIsLaunching(false);
-    toast.success('Monster launched successfully!');
+    try {
+      const newMonster = await createMonster(user.id, {
+        name,
+        ticker,
+        description: description || `A powerful ${type.toLowerCase()} type monster.`,
+        type,
+        hp,
+        imageUrl: imageUrl || '/placeholder.svg',
+        moves,
+        rarity,
+      });
+      
+      if (newMonster) {
+        setLaunchedMonster(newMonster);
+        setShowSuccessModal(true);
+        toast.success('Monster launched successfully!');
+      } else {
+        toast.error('Failed to launch monster');
+      }
+    } catch (err) {
+      toast.error('Launch failed. Please try again.');
+    } finally {
+      setIsLaunching(false);
+    }
   };
 
-  const handleGenerateImage = () => {
-    toast.info('AI image generation coming soon! Upload an image for now.');
-  };
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background bg-pattern py-8 px-6 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <h1 className="font-display text-3xl font-bold text-foreground">
+            Sign In to Create
+          </h1>
+          <p className="text-muted-foreground max-w-md">
+            You need to be signed in to create and launch your own monsters.
+          </p>
+          <Button onClick={() => navigate('/auth')} className="btn-glow">
+            <LogIn className="w-5 h-5 mr-2" />
+            Sign In / Sign Up
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background bg-pattern py-8 px-6">
@@ -234,7 +288,7 @@ export default function CreateMonster() {
                 <Input
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="Image URL or upload"
+                  placeholder="Image URL or generate with AI"
                   className="flex-1"
                 />
                 <Button type="button" variant="secondary">
@@ -246,9 +300,19 @@ export default function CreateMonster() {
                 variant="outline"
                 className="w-full"
                 onClick={handleGenerateImage}
+                disabled={isGeneratingImage}
               >
-                <Wand2 className="w-4 h-4 mr-2" />
-                Generate with AI
+                {isGeneratingImage ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="w-4 h-4 mr-2" />
+                    Generate with AI
+                  </>
+                )}
               </Button>
             </div>
 
@@ -278,7 +342,10 @@ export default function CreateMonster() {
               disabled={isLaunching}
             >
               {isLaunching ? (
-                <>Launching...</>
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Launching...
+                </>
               ) : (
                 <>
                   <Rocket className="w-5 h-5 mr-2" />

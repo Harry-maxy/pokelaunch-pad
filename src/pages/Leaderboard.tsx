@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMonsterStore } from '@/store/monsterStore';
+import { fetchMonsters } from '@/lib/api';
 import { formatMarketCap, Monster } from '@/types/monster';
 import { Button } from '@/components/ui/button';
-import { Trophy, Crown, TrendingUp, Calendar, ArrowUpDown } from 'lucide-react';
+import { Trophy, Crown, TrendingUp, Calendar, ArrowUpDown, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -11,9 +11,21 @@ type SortField = 'marketCap' | 'evolutionStage' | 'createdAt';
 
 export default function Leaderboard() {
   const navigate = useNavigate();
-  const { monsters } = useMonsterStore();
+  const [monsters, setMonsters] = useState<Monster[]>([]);
+  const [loading, setLoading] = useState(true);
   const [sortField, setSortField] = useState<SortField>('marketCap');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  useEffect(() => {
+    loadMonsters();
+  }, []);
+
+  const loadMonsters = async () => {
+    setLoading(true);
+    const data = await fetchMonsters('trending');
+    setMonsters(data);
+    setLoading(false);
+  };
 
   const sortedMonsters = [...monsters].sort((a, b) => {
     let comparison = 0;
@@ -73,6 +85,14 @@ export default function Leaderboard() {
       </span>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background bg-pattern py-8 px-6">
@@ -142,14 +162,14 @@ export default function Leaderboard() {
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className={cn(
-                          'w-10 h-10 rounded-lg flex items-center justify-center',
+                          'w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden',
                           `card-frame-${monster.type.toLowerCase()}`
                         )}>
-                          {monster.imageUrl ? (
+                          {monster.imageUrl && monster.imageUrl !== '/placeholder.svg' ? (
                             <img
                               src={monster.imageUrl}
                               alt={monster.name}
-                              className="w-full h-full object-cover rounded-lg"
+                              className="w-full h-full object-cover"
                             />
                           ) : (
                             <span className="text-lg">🔥</span>
