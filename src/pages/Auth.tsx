@@ -4,8 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Zap, Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import logo from '@/assets/logo.svg';
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -64,9 +65,7 @@ export default function Auth() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <Link to="/" className="inline-flex items-center gap-2 mb-6 group">
-            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center group-hover:animate-pulse-glow transition-all">
-              <Zap className="w-7 h-7 text-primary-foreground" />
-            </div>
+            <img src={logo} alt="PokeLaunch" className="w-12 h-12 group-hover:animate-pulse-glow transition-all" />
             <div className="text-left">
               <h1 className="font-display font-bold text-2xl text-foreground">
                 Poke<span className="text-primary">Launch</span>
