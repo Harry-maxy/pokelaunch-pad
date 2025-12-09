@@ -1,4 +1,5 @@
 import { NavLink } from '@/components/NavLink';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Home, 
   PlusCircle, 
@@ -6,9 +7,15 @@ import {
   Layout, 
   Trophy, 
   Sparkles,
-  Zap
+  Zap,
+  LogIn,
+  LogOut,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home' },
@@ -19,6 +26,15 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success('Signed out successfully');
+    navigate('/');
+  };
+
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-56 bg-sidebar border-r border-sidebar-border flex flex-col z-50">
       {/* Logo */}
@@ -65,6 +81,42 @@ export function Sidebar() {
           <Sparkles className="w-5 h-5" />
           Create Monster
         </NavLink>
+      </div>
+
+      {/* User Section */}
+      <div className="p-4 border-t border-sidebar-border">
+        {user ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 px-2">
+              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                <User className="w-4 h-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground truncate">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-full justify-start"
+              onClick={handleSignOut}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        ) : (
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => navigate('/auth')}
+          >
+            <LogIn className="w-4 h-4 mr-2" />
+            Sign In
+          </Button>
+        )}
       </div>
 
       {/* Footer Info */}

@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMonsterStore } from '@/store/monsterStore';
+import { useEffect, useState } from 'react';
+import { fetchMonster } from '@/lib/api';
 import { PokemonCard } from '@/components/PokemonCard';
 import { Button } from '@/components/ui/button';
-import { formatMarketCap } from '@/types/monster';
+import { Monster, formatMarketCap } from '@/types/monster';
 import { 
   ArrowLeft, 
   ExternalLink, 
@@ -12,7 +13,8 @@ import {
   Users, 
   BarChart3,
   Clock,
-  Crown
+  Crown,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -20,9 +22,29 @@ import { format } from 'date-fns';
 export default function MonsterDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getMonster } = useMonsterStore();
+  const [monster, setMonster] = useState<Monster | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  const monster = getMonster(id || '');
+  useEffect(() => {
+    if (id) {
+      loadMonster(id);
+    }
+  }, [id]);
+
+  const loadMonster = async (monsterId: string) => {
+    setLoading(true);
+    const data = await fetchMonster(monsterId);
+    setMonster(data);
+    setLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
   
   if (!monster) {
     return (

@@ -14,7 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      monsters: {
+        Row: {
+          created_at: string
+          creator_id: string | null
+          creator_wallet: string | null
+          description: string | null
+          evolution_stage: number | null
+          holders: number | null
+          hp: number
+          id: string
+          image_url: string | null
+          market_cap: number | null
+          moves: Json | null
+          name: string
+          price_change_24h: number | null
+          pump_url: string | null
+          rarity: Database["public"]["Enums"]["monster_rarity"]
+          ticker: string
+          type: Database["public"]["Enums"]["monster_type"]
+          updated_at: string
+          volume_24h: number | null
+        }
+        Insert: {
+          created_at?: string
+          creator_id?: string | null
+          creator_wallet?: string | null
+          description?: string | null
+          evolution_stage?: number | null
+          holders?: number | null
+          hp?: number
+          id?: string
+          image_url?: string | null
+          market_cap?: number | null
+          moves?: Json | null
+          name: string
+          price_change_24h?: number | null
+          pump_url?: string | null
+          rarity?: Database["public"]["Enums"]["monster_rarity"]
+          ticker: string
+          type?: Database["public"]["Enums"]["monster_type"]
+          updated_at?: string
+          volume_24h?: number | null
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string | null
+          creator_wallet?: string | null
+          description?: string | null
+          evolution_stage?: number | null
+          holders?: number | null
+          hp?: number
+          id?: string
+          image_url?: string | null
+          market_cap?: number | null
+          moves?: Json | null
+          name?: string
+          price_change_24h?: number | null
+          pump_url?: string | null
+          rarity?: Database["public"]["Enums"]["monster_rarity"]
+          ticker?: string
+          type?: Database["public"]["Enums"]["monster_type"]
+          updated_at?: string
+          volume_24h?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          total_launches: number | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          total_launches?: number | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          total_launches?: number | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      templates: {
+        Row: {
+          base_moves: Json | null
+          created_at: string
+          hp: number
+          id: string
+          image_url: string | null
+          name: string
+          rarity: Database["public"]["Enums"]["monster_rarity"]
+          type: Database["public"]["Enums"]["monster_type"]
+        }
+        Insert: {
+          base_moves?: Json | null
+          created_at?: string
+          hp?: number
+          id?: string
+          image_url?: string | null
+          name: string
+          rarity?: Database["public"]["Enums"]["monster_rarity"]
+          type: Database["public"]["Enums"]["monster_type"]
+        }
+        Update: {
+          base_moves?: Json | null
+          created_at?: string
+          hp?: number
+          id?: string
+          image_url?: string | null
+          name?: string
+          rarity?: Database["public"]["Enums"]["monster_rarity"]
+          type?: Database["public"]["Enums"]["monster_type"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +151,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      monster_rarity: "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
+      monster_type: "Fire" | "Water" | "Electric" | "Grass" | "Shadow" | "Meme"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +279,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      monster_rarity: ["Common", "Uncommon", "Rare", "Epic", "Legendary"],
+      monster_type: ["Fire", "Water", "Electric", "Grass", "Shadow", "Meme"],
+    },
   },
 } as const
