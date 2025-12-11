@@ -1,5 +1,4 @@
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { Button } from './ui/button';
 import { Wallet, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,14 +9,18 @@ interface CustomWalletButtonProps {
 }
 
 export function CustomWalletButton({ className, size = 'default' }: CustomWalletButtonProps) {
-  const { publicKey, disconnect, connected } = useWallet();
-  const { setVisible } = useWalletModal();
+  const { publicKey, disconnect, connected, select, wallets, connect } = useWallet();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (connected) {
       disconnect();
     } else {
-      setVisible(true);
+      // Find Phantom wallet and connect directly
+      const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom');
+      if (phantomWallet) {
+        select(phantomWallet.adapter.name);
+        // The wallet adapter will automatically try to connect after selection
+      }
     }
   };
 
