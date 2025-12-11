@@ -36,48 +36,51 @@ const Index = () => {
     Meme: monsters.filter(m => m.type === 'Meme').length
   };
   return <div className="min-h-screen bg-background">
-      {/* Stats Bar - aligned with sidebar borders */}
-      <div className="border-b border-sidebar-border">
-        <div className="flex items-center justify-between px-6 py-3">
-          {/* Left: Stats */}
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <span className="font-display text-lg font-bold text-primary">{monsters.length}</span>
-              <span className="text-xs text-muted-foreground">Pokes</span>
+      {/* Stats Bar - clean minimal design */}
+      <div className="border-b border-sidebar-border bg-sidebar/30">
+        <div className="flex items-center justify-between px-4 py-2.5">
+          {/* Left: Compact Stats */}
+          <div className="flex items-center gap-1">
+            <div className="flex items-center gap-4 px-3 py-1.5 rounded-lg bg-background/50">
+              <div className="flex items-center gap-1.5">
+                <span className="font-display text-sm font-bold text-primary">{monsters.length}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Pokes</span>
+              </div>
+              <div className="w-px h-3 bg-border/50" />
+              <div className="flex items-center gap-1.5">
+                <span className="font-display text-sm font-bold text-legendary-gold">{legendaryCount}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Legendary</span>
+              </div>
+              <div className="w-px h-3 bg-border/50" />
+              <div className="flex items-center gap-1.5">
+                <span className="font-display text-sm font-bold text-type-shadow">{epicCount}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Epic</span>
+              </div>
+              <div className="w-px h-3 bg-border/50" />
+              <div className="flex items-center gap-1.5">
+                <span className="font-display text-sm font-bold text-type-water">{rareCount}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Rare</span>
+              </div>
+              <div className="w-px h-3 bg-border/50" />
+              <div className="flex items-center gap-1.5">
+                <span className="font-display text-sm font-bold text-accent">{creatorCount}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Creators</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-display text-lg font-bold text-legendary-gold">{legendaryCount}</span>
-              <span className="text-xs text-muted-foreground">Legendary</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-display text-lg font-bold text-type-shadow">{epicCount}</span>
-              <span className="text-xs text-muted-foreground">Epic</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-display text-lg font-bold text-type-water">{rareCount}</span>
-              <span className="text-xs text-muted-foreground">Rare</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-display text-lg font-bold text-accent">{creatorCount}</span>
-              <span className="text-xs text-muted-foreground">Creators</span>
-            </div>
-            <div className="h-4 w-px bg-border" />
-            {/* Type Stats inline */}
-            {Object.entries(typeStats).map(([type, count]) => {})}
           </div>
           
           {/* Right: Action Buttons */}
-          <div className="flex items-center gap-2">
-            <Button className="btn-pokemon h-8 text-sm" onClick={() => navigate('/create')}>
-              <Zap className="w-3.5 h-3.5 mr-1.5" />
-              Create Poke
+          <div className="flex items-center gap-1.5">
+            <Button className="btn-pokemon h-7 text-xs px-3" onClick={() => navigate('/create')}>
+              <Zap className="w-3 h-3 mr-1" />
+              Create
             </Button>
-            <Button variant="outline" size="sm" className="h-8" onClick={() => navigate('/discover')}>
-              <Search className="w-3.5 h-3.5 mr-1.5" />
+            <Button variant="ghost" size="sm" className="h-7 text-xs px-2.5 text-muted-foreground hover:text-foreground" onClick={() => navigate('/discover')}>
+              <Search className="w-3 h-3 mr-1" />
               Discover
             </Button>
-            <Button variant="outline" size="sm" className="h-8" onClick={() => navigate('/ranking')}>
-              <Crown className="w-3.5 h-3.5 mr-1.5" />
+            <Button variant="ghost" size="sm" className="h-7 text-xs px-2.5 text-muted-foreground hover:text-foreground" onClick={() => navigate('/ranking')}>
+              <Crown className="w-3 h-3 mr-1" />
               Ranking
             </Button>
           </div>
