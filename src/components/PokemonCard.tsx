@@ -46,10 +46,10 @@ const TYPE_INNER_GLOW: Record<MonsterType, string> = {
 };
 
 const SIZE_CLASSES = {
-  xs: 'w-40 h-60',
-  sm: 'w-48 h-72',
-  md: 'w-56 h-80',
-  lg: 'w-72 h-[420px]',
+  xs: 'w-40 h-[17rem]',
+  sm: 'w-48 h-80',
+  md: 'w-56 h-[22rem]',
+  lg: 'w-72 h-[26rem]',
 };
 
 export function PokemonCard({ monster, size = 'md', interactive = true, onClick }: PokemonCardProps) {
