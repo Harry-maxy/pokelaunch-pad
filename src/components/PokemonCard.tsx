@@ -178,16 +178,7 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
         "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card via-card/95 to-transparent",
         isSmall ? "px-2 py-2" : "px-3 py-2"
       )}>
-        <div className="flex flex-col gap-1">
-          {monster.marketCap !== undefined && (
-            <div className={isSmall ? "text-[11px]" : "text-xs"}>
-              <span className="text-muted-foreground">MC </span>
-              <span className="font-mono font-bold text-accent">
-                {formatMarketCap(monster.marketCap)}
-              </span>
-            </div>
-          )}
-          
+        <div className="flex items-center justify-between gap-1">
           <div className="flex gap-0.5">
             {Array.from({ length: RARITY_STARS[rarity] }).map((_, i) => (
               <Star
@@ -206,6 +197,15 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
               />
             ))}
           </div>
+          
+          {monster.marketCap !== undefined && (
+            <div className={isSmall ? "text-[10px]" : "text-xs"}>
+              <span className="text-muted-foreground">MC </span>
+              <span className="font-mono font-bold text-accent">
+                {formatMarketCap(monster.marketCap)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
