@@ -13,8 +13,11 @@ import {
   Search,
   Crown,
   Swords,
-  AlertCircle
+  AlertCircle,
+  Copy,
+  Check
 } from 'lucide-react';
+import { Twitter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
