@@ -10,7 +10,10 @@ import {
   LogIn,
   LogOut,
   User,
-  Zap
+  Zap,
+  Search,
+  Crown,
+  Swords
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -21,9 +24,10 @@ import logo from '@/assets/logo.svg';
 const navItems = [
   { to: '/', icon: Home, label: 'Home', color: 'hover:text-primary' },
   { to: '/create', icon: Zap, label: 'Create Poke', color: 'hover:text-accent' },
-  { to: '/import', icon: Download, label: 'Import Stats', color: 'hover:text-type-water' },
+  { to: '/discover', icon: Search, label: 'Discover Pokes', color: 'hover:text-type-water' },
+  { to: '/ranking', icon: Crown, label: 'Creator Ranking', color: 'hover:text-legendary-gold' },
   { to: '/templates', icon: Layout, label: 'Templates', color: 'hover:text-type-electric' },
-  { to: '/leaderboard', icon: Trophy, label: 'Hall of Launches', color: 'hover:text-legendary-gold' },
+  { to: '/battle', icon: Swords, label: 'PokeBattle', color: 'hover:text-type-shadow', badge: 'Soon' },
 ];
 
 export function Sidebar() {
@@ -69,7 +73,12 @@ export function Sidebar() {
             activeClassName="bg-sidebar-accent text-sidebar-foreground border-primary/30"
           >
             <item.icon className="w-5 h-5" />
-            <span className="font-medium">{item.label}</span>
+            <span className="font-medium flex-1">{item.label}</span>
+            {'badge' in item && item.badge && (
+              <span className="px-2 py-0.5 rounded-full bg-type-shadow/20 text-type-shadow text-[10px] font-bold">
+                {item.badge}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>
