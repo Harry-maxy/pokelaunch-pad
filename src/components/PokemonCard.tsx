@@ -176,7 +176,7 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
       {/* Footer */}
       <div className={cn(
         "absolute left-0 right-0",
-        isSmall ? "bottom-2 px-2" : "bottom-3 px-3"
+        isSmall ? "bottom-4 px-2" : "bottom-5 px-3"
       )}>
         <div className="flex items-center justify-between gap-1">
           <div className="flex gap-0.5">
