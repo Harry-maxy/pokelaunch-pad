@@ -51,7 +51,7 @@ export default function MonsterDetail() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="font-display text-2xl font-bold text-foreground mb-4">
-            Monster Not Found
+            Poke Not Found
           </h1>
           <Button onClick={() => navigate('/')}>
             <ArrowLeft className="w-4 h-4 mr-2" />

@@ -11,6 +11,9 @@ import ImportStats from "./pages/ImportStats";
 import Templates from "./pages/Templates";
 import MonsterDetail from "./pages/MonsterDetail";
 import Leaderboard from "./pages/Leaderboard";
+import CreatorRanking from "./pages/CreatorRanking";
+import Discover from "./pages/Discover";
+import PokeBattle from "./pages/PokeBattle";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +32,10 @@ const App = () => (
               <Route path="/create" element={<CreateMonster />} />
               <Route path="/import" element={<ImportStats />} />
               <Route path="/templates" element={<Templates />} />
+              <Route path="/discover" element={<Discover />} />
+              <Route path="/ranking" element={<CreatorRanking />} />
+              <Route path="/battle" element={<PokeBattle />} />
+              <Route path="/poke/:id" element={<MonsterDetail />} />
               <Route path="/monster/:id" element={<MonsterDetail />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
             </Route>

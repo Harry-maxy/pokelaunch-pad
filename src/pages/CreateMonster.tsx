@@ -144,7 +144,7 @@ export default function CreateMonster() {
             Sign In to Create
           </h1>
           <p className="text-muted-foreground max-w-md">
-            You need to be signed in to create and launch your own monsters.
+            You need to be signed in to create and launch your own Pokes.
           </p>
           <Button onClick={() => navigate('/auth')} className="btn-glow">
             <LogIn className="w-5 h-5 mr-2" />
@@ -160,10 +160,10 @@ export default function CreateMonster() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold text-foreground mb-2">
-            Create Your Monster
+            Create Your Poke
           </h1>
           <p className="text-muted-foreground">
-            Design a unique creature and launch it as a token on Pump.fun
+            Design a unique Poke and launch it as a token on Pump.fun
           </p>
         </div>
 
@@ -173,7 +173,7 @@ export default function CreateMonster() {
             {/* Name & Ticker */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Monster Name</Label>
+                <Label htmlFor="name">Poke Name</Label>
                 <div className="flex gap-2">
                   <Input
                     id="name"
