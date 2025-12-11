@@ -28,58 +28,60 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header Section */}
-      <section className="py-12 px-6 border-b border-border">
+      <section className="py-10 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+          {/* Top Row: Title + Buttons */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="font-display text-4xl font-bold text-foreground mb-2">
+              <h1 className="font-display text-3xl font-bold text-foreground tracking-tight">
                 Poke<span className="text-primary">Launch</span>
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground mt-1">
                 Create and launch your Poke tokens
               </p>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Button 
-                size="lg" 
-                className="btn-pokemon px-8 py-6 text-lg"
+                className="btn-pokemon"
                 onClick={() => navigate('/create')}
               >
-                <Zap className="w-5 h-5 mr-2" />
+                <Zap className="w-4 h-4 mr-2" />
                 Create Poke
               </Button>
               <Button 
                 variant="outline" 
                 size="sm"
+                className="h-9"
                 onClick={() => navigate('/discover')}
               >
-                <Search className="w-4 h-4 mr-1" />
+                <Search className="w-4 h-4 mr-1.5" />
                 Discover
               </Button>
               <Button 
                 variant="outline" 
                 size="sm"
+                className="h-9"
                 onClick={() => navigate('/ranking')}
               >
-                <Crown className="w-4 h-4 mr-1" />
+                <Crown className="w-4 h-4 mr-1.5" />
                 Ranking
               </Button>
             </div>
           </div>
 
-          {/* Stats Bar */}
-          <div className="flex gap-6 mt-8 pt-6 border-t border-border/50">
+          {/* Stats Row */}
+          <div className="flex items-center gap-6 py-4 border-t border-b border-border">
             <div className="flex items-center gap-2">
-              <span className="font-display text-2xl font-bold text-primary">{monsters.length}</span>
+              <span className="font-display text-xl font-bold text-primary">{monsters.length}</span>
               <span className="text-sm text-muted-foreground">Pokes</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-display text-2xl font-bold text-legendary-gold">{legendaryCount}</span>
+              <span className="font-display text-xl font-bold text-legendary-gold">{legendaryCount}</span>
               <span className="text-sm text-muted-foreground">Legendary</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-display text-2xl font-bold text-accent">{creatorCount}</span>
+              <span className="font-display text-xl font-bold text-accent">{creatorCount}</span>
               <span className="text-sm text-muted-foreground">Creators</span>
             </div>
           </div>
@@ -87,15 +89,15 @@ const Index = () => {
       </section>
 
       {/* Deployed Tokens Grid */}
-      <section className="py-8 px-6">
+      <section className="py-6 px-6">
         <div className="max-w-6xl mx-auto">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-4">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <p className="text-muted-foreground">Loading pokes...</p>
+            <div className="flex flex-col items-center justify-center py-20 gap-3">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Loading pokes...</p>
             </div>
           ) : monsters.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {monsters.map((monster) => (
                 <PokemonCard
                   key={monster.id}
@@ -107,12 +109,12 @@ const Index = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-muted-foreground" />
+            <div className="text-center py-16">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-muted-foreground" />
               </div>
-              <h3 className="font-display text-xl font-bold text-foreground mb-2">No Pokes Yet</h3>
-              <p className="text-muted-foreground mb-6">Be the first to create one!</p>
+              <h3 className="font-display text-lg font-bold text-foreground mb-2">No Pokes Yet</h3>
+              <p className="text-sm text-muted-foreground mb-5">Be the first to create one!</p>
               <Button onClick={() => navigate('/create')} className="btn-pokemon">
                 <Zap className="w-4 h-4 mr-2" />
                 Create Poke
