@@ -63,12 +63,7 @@ const Index = () => {
             </div>
             <div className="h-4 w-px bg-border" />
             {/* Type Stats inline */}
-            {Object.entries(typeStats).map(([type, count]) => (
-              <div key={type} className="flex items-center gap-1 text-xs">
-                <span>{type === 'Fire' ? '🔥' : type === 'Water' ? '💧' : type === 'Electric' ? '⚡' : type === 'Grass' ? '🌿' : type === 'Shadow' ? '🌙' : '😂'}</span>
-                <span className="font-medium">{count}</span>
-              </div>
-            ))}
+            {Object.entries(typeStats).map(([type, count]) => {})}
           </div>
           
           {/* Right: Action Buttons */}
