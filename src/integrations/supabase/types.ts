@@ -35,6 +35,8 @@ export type Database = {
           type: Database["public"]["Enums"]["monster_type"]
           updated_at: string
           volume_24h: number | null
+          mint_address: string | null
+          twitter_link: string | null
         }
         Insert: {
           created_at?: string
@@ -56,6 +58,8 @@ export type Database = {
           type?: Database["public"]["Enums"]["monster_type"]
           updated_at?: string
           volume_24h?: number | null
+          mint_address?: string | null
+          twitter_link?: string | null
         }
         Update: {
           created_at?: string
@@ -77,6 +81,8 @@ export type Database = {
           type?: Database["public"]["Enums"]["monster_type"]
           updated_at?: string
           volume_24h?: number | null
+          mint_address?: string | null
+          twitter_link?: string | null
         }
         Relationships: []
       }

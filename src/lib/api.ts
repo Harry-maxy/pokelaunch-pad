@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Poke, Template, PokeType, Rarity, Move, Monster, MonsterType } from '@/types/monster';
+import { getPumpFunTokenInfo } from './pumpfun';
 
 // Backwards compatibility aliases
 export const fetchMonsters = fetchPokes;
@@ -31,6 +32,8 @@ interface DbPoke {
   price_change_24h: number | null;
   created_at: string;
   updated_at: string;
+  mint_address: string | null;
+  twitter_link: string | null;
 }
 
 interface DbTemplate {
@@ -63,6 +66,8 @@ function dbPokeToPoke(db: DbPoke): Poke {
     volume24h: Number(db.volume_24h) || 0,
     holders: db.holders || 0,
     priceChange24h: Number(db.price_change_24h) || 0,
+    mintAddress: db.mint_address || undefined,
+    twitterLink: db.twitter_link || undefined,
   };
 }
 
@@ -78,7 +83,33 @@ function dbTemplateToTemplate(db: DbTemplate): Template {
   };
 }
 
-export async function fetchPokes(filter?: string): Promise<Poke[]> {
+/**
+ * Enrich a single poke with live data from pump.fun if mint address is available
+ */
+async function enrichPokeWithPumpData(poke: Poke): Promise<Poke> {
+  if (!poke.mintAddress) {
+    return poke;
+  }
+
+  try {
+    const pumpData = await getPumpFunTokenInfo(poke.mintAddress);
+    if (pumpData) {
+      return {
+        ...poke,
+        marketCap: pumpData.marketCap || poke.marketCap,
+        volume24h: pumpData.volume24h || poke.volume24h,
+        holders: pumpData.holders || poke.holders,
+        priceChange24h: pumpData.priceChange24h || poke.priceChange24h,
+      };
+    }
+  } catch (error) {
+    console.warn(`Failed to fetch pump.fun data for ${poke.mintAddress}:`, error);
+  }
+
+  return poke;
+}
+
+export async function fetchPokes(filter?: string, enrichWithLiveData: boolean = false): Promise<Poke[]> {
   let query = supabase.from('monsters').select('*');
   
   if (filter === 'trending') {
@@ -99,7 +130,17 @@ export async function fetchPokes(filter?: string): Promise<Poke[]> {
     return [];
   }
   
-  return (data as unknown as DbPoke[]).map(dbPokeToPoke);
+  const pokes = (data as unknown as DbPoke[]).map(dbPokeToPoke);
+
+  // Optionally enrich with live data (only for first page to avoid too many API calls)
+  if (enrichWithLiveData) {
+    const enrichedPokes = await Promise.all(
+      pokes.slice(0, 12).map(poke => enrichPokeWithPumpData(poke))
+    );
+    return [...enrichedPokes, ...pokes.slice(12)];
+  }
+
+  return pokes;
 }
 
 export async function fetchPoke(id: string): Promise<Poke | null> {
@@ -130,17 +171,8 @@ export async function fetchTemplates(): Promise<Template[]> {
   return (data as unknown as DbTemplate[]).map(dbTemplateToTemplate);
 }
 
-function generateWallet(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
-  let result = '';
-  for (let i = 0; i < 8; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-
 export async function createPoke(
-  userId: string,
+  creatorWallet: string,
   pokeData: {
     name: string;
     ticker: string;
@@ -150,32 +182,38 @@ export async function createPoke(
     imageUrl: string;
     moves: Move[];
     rarity: Rarity;
+    mintAddress?: string;
+    twitterLink?: string;
   }
 ): Promise<Poke | null> {
   const initialMarketCap = Math.floor(Math.random() * 50000) + 5000;
   const pokeId = crypto.randomUUID();
   
+  // Build insert object - only core fields that exist in original schema
+  const insertData = {
+    id: pokeId,
+    name: pokeData.name,
+    ticker: pokeData.ticker,
+    description: pokeData.description,
+    type: pokeData.type as DbPokeType,
+    hp: pokeData.hp,
+    image_url: pokeData.imageUrl,
+    moves: pokeData.moves as unknown as never,
+    rarity: pokeData.rarity as DbPokeRarity,
+    market_cap: initialMarketCap,
+    evolution_stage: 1,
+    pump_url: pokeData.mintAddress 
+      ? `https://pump.fun/${pokeData.mintAddress}` 
+      : `https://pump.fun/launch/${pokeId}`,
+    creator_wallet: creatorWallet,
+    volume_24h: Math.floor(Math.random() * 10000) + 500,
+    holders: Math.floor(Math.random() * 100) + 10,
+    price_change_24h: (Math.random() - 0.3) * 50,
+  };
+  
   const { data, error } = await supabase
     .from('monsters')
-    .insert({
-      id: pokeId,
-      name: pokeData.name,
-      ticker: pokeData.ticker,
-      description: pokeData.description,
-      type: pokeData.type as DbPokeType,
-      hp: pokeData.hp,
-      image_url: pokeData.imageUrl,
-      moves: pokeData.moves as unknown as never,
-      rarity: pokeData.rarity as DbPokeRarity,
-      market_cap: initialMarketCap,
-      evolution_stage: 1,
-      pump_url: `https://pump.fun/launch/${pokeId}`,
-      creator_id: userId,
-      creator_wallet: generateWallet(),
-      volume_24h: Math.floor(Math.random() * 10000) + 500,
-      holders: Math.floor(Math.random() * 100) + 10,
-      price_change_24h: (Math.random() - 0.3) * 50,
-    })
+    .insert(insertData)
     .select()
     .single();
   
@@ -203,4 +241,22 @@ export async function generatePokeImage(prompt: string, pokeType: PokeType): Pro
     console.error('Failed to generate image:', err);
     return null;
   }
+}
+
+/**
+ * Fetch pokes created by a specific wallet address
+ */
+export async function fetchPokesByCreator(walletAddress: string): Promise<Poke[]> {
+  const { data, error } = await supabase
+    .from('monsters')
+    .select('*')
+    .eq('creator_wallet', walletAddress)
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching pokes by creator:', error);
+    return [];
+  }
+  
+  return (data as unknown as DbPoke[]).map(dbPokeToPoke);
 }

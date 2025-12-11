@@ -19,21 +19,24 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Create a detailed prompt for monster image generation
+    // Create a detailed prompt for monster image generation - SQUARE 1:1 aspect ratio
     const imagePrompt = `Create an original creature design for a trading card game. The creature should be a ${monsterType || 'magical'} type monster. 
     
 Style requirements:
+- SQUARE image format (1:1 aspect ratio)
 - Anime/TCG art style, glossy and detailed
+- Centered composition with the creature as focal point
 - Dynamic pose showing power and personality
 - Vibrant colors matching the ${monsterType} element
 - NOT a copy of any existing Pokémon or copyrighted character
 - Original creature design with unique features
 - Suitable for a collectible card frame
 - High quality, professional game art
+- Clean background that works in a card frame
 
 Creature description: ${prompt || 'A powerful and mysterious creature with unique abilities'}
 
-Make it look like official trading card game artwork, 16:9 aspect ratio, ultra high quality.`;
+IMPORTANT: Generate a SQUARE 1:1 aspect ratio image, ultra high quality, centered composition.`;
 
     console.log('Generating image with prompt:', imagePrompt);
 

@@ -46,10 +46,10 @@ const TYPE_INNER_GLOW: Record<MonsterType, string> = {
 };
 
 const SIZE_CLASSES = {
-  xs: 'w-40 h-[17rem]',
-  sm: 'w-48 h-80',
-  md: 'w-56 h-[22rem]',
-  lg: 'w-72 h-[26rem]',
+  xs: 'w-40 h-[18rem]',
+  sm: 'w-48 h-[21rem]',
+  md: 'w-56 h-[26rem]',
+  lg: 'w-72 h-[32rem]',
 };
 
 export function PokemonCard({ monster, size = 'md', interactive = true, onClick }: PokemonCardProps) {
@@ -64,7 +64,7 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
     <div
       onClick={onClick}
       className={cn(
-        'relative rounded-xl overflow-hidden transition-all duration-300',
+        'relative rounded-xl overflow-hidden transition-all duration-300 flex flex-col',
         SIZE_CLASSES[size],
         TYPE_FRAME_CLASSES[type],
         'border-2',
@@ -85,7 +85,7 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
 
       {/* Header with Type */}
       <div className={cn(
-        'flex items-center justify-between px-2',
+        'flex items-center justify-between px-2 shrink-0',
         TYPE_HEADER_BG[type],
         isSmall ? 'h-7' : 'h-9'
       )}>
@@ -111,7 +111,7 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
 
       {/* Image Area */}
       <div className={cn(
-        "relative rounded-lg overflow-hidden border border-white/10 bg-muted",
+        "relative rounded-lg overflow-hidden border border-white/10 bg-muted shrink-0",
         isSmall ? "mx-1.5 mt-1.5" : "mx-2 mt-2"
       )}>
         <div className="aspect-square relative">
@@ -157,8 +157,8 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
 
       {/* Name Panel */}
       <div className={cn(
-        "rounded-md bg-secondary/50 border border-border/50",
-        isSmall ? "mx-1.5 mt-1.5 px-2 py-1" : "mx-2 mt-2 px-3 py-2"
+        "rounded-md bg-secondary/50 border border-border/50 shrink-0",
+        isSmall ? "mx-1.5 mt-2 px-2 py-1.5" : "mx-2 mt-2 px-3 py-1.5"
       )}>
         <h3 className={cn(
           "font-display font-bold text-foreground truncate leading-tight",
@@ -167,25 +167,51 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
           {monster.name || 'Unnamed'}
         </h3>
         {monster.ticker && (
-          <p className={cn("font-mono text-accent font-semibold", isSmall ? "text-[9px]" : "text-xs")}>
+          <p className={cn("font-mono text-accent font-semibold mt-0.5", isSmall ? "text-[9px]" : "text-xs")}>
             ${monster.ticker}
           </p>
         )}
       </div>
 
-      {/* Footer */}
+      {/* Moves Section */}
+      {monster.moves && monster.moves.length > 0 && !isSmall && (
+        <div className={cn(
+          "shrink-0 space-y-1",
+          "mx-2 mt-2"
+        )}>
+          {monster.moves.slice(0, 2).map((move, idx) => (
+            <div 
+              key={idx}
+              className="flex items-center justify-between bg-secondary/30 rounded px-2 py-1 border border-border/30"
+            >
+              <span className="text-[10px] text-foreground/80 truncate flex-1">
+                {move.name}
+              </span>
+              <span className="text-[10px] font-mono font-bold text-destructive ml-2">
+                {move.damage}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Spacer */}
+      <div className="flex-1 min-h-1" />
+
+      {/* Footer - Rarity Stars and Market Cap */}
       <div className={cn(
-        "absolute left-0 right-0",
-        isSmall ? "bottom-4 px-2" : "bottom-5 px-3"
+        "shrink-0 border-t border-border/30 bg-secondary/30",
+        isSmall ? "mx-1.5 mb-1.5 px-2 py-2 rounded-md" : "mx-2 mb-2 px-3 py-2.5 rounded-md"
       )}>
-        <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center justify-between gap-2">
+          {/* Rarity Stars */}
           <div className="flex gap-0.5">
             {Array.from({ length: RARITY_STARS[rarity] }).map((_, i) => (
               <Star
                 key={i}
                 className={cn(
                   'drop-shadow-lg',
-                  isSmall ? 'w-2.5 h-2.5' : 'w-3 h-3',
+                  isSmall ? 'w-3 h-3' : 'w-3.5 h-3.5',
                   isLegendary 
                     ? 'text-yellow-400 fill-yellow-400' 
                     : isEpic
@@ -198,8 +224,12 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
             ))}
           </div>
           
+          {/* Market Cap */}
           {monster.marketCap !== undefined && (
-            <div className={isSmall ? "text-[10px]" : "text-xs"}>
+            <div className={cn(
+              "bg-background/50 rounded px-2 py-0.5 border border-border/50",
+              isSmall ? "text-[10px]" : "text-xs"
+            )}>
               <span className="text-muted-foreground">MC </span>
               <span className="font-mono font-bold text-accent">
                 {formatMarketCap(monster.marketCap)}

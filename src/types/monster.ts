@@ -30,6 +30,9 @@ export interface Poke {
   volume24h?: number;
   holders?: number;
   priceChange24h?: number;
+  // New fields for Solana integration
+  mintAddress?: string;
+  twitterLink?: string;
 }
 
 export interface Template {

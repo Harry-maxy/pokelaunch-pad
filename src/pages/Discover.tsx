@@ -24,15 +24,18 @@ export default function Discover() {
     setLoading(true);
     let data: Monster[];
     
+    // Use enrichWithLiveData=true to get real-time pump.fun data for trending
+    const enrichData = activeFilter === 'trending';
+    
     if (activeFilter === 'trending') {
-      data = await fetchMonsters('trending');
+      data = await fetchMonsters('trending', enrichData);
     } else if (activeFilter === 'newest') {
-      data = await fetchMonsters('newest');
+      data = await fetchMonsters('newest', enrichData);
     } else if (activeFilter === 'all') {
-      data = await fetchMonsters('all');
+      data = await fetchMonsters('all', enrichData);
     } else {
       // Filter by type
-      data = await fetchMonsters('all');
+      data = await fetchMonsters('all', enrichData);
       data = data.filter(p => p.type === activeFilter);
     }
     

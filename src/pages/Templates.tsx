@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { CustomWalletButton } from '@/components/CustomWalletButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,19 +10,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { PokemonCard } from '@/components/PokemonCard';
 import { TypeSelector } from '@/components/TypeSelector';
 import { LaunchSuccessModal } from '@/components/LaunchSuccessModal';
-import { useAuth } from '@/contexts/AuthContext';
-import { fetchTemplates, createMonster, generateMonsterImage } from '@/lib/api';
-import { Monster, Template, MonsterType, Move, Rarity } from '@/types/monster';
-import { Rocket, Layout, Loader2, LogIn, Wand2 } from 'lucide-react';
+import { createMonster, generateMonsterImage } from '@/lib/api';
+import { Monster, MonsterType, Move, Rarity } from '@/types/monster';
+import { fetchPopularPokemon, PokemonData } from '@/lib/pokeapi';
+import { Rocket, Layout, Loader2, Wallet, Wand2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { getWalletBalance, checkMinimumBalance, formatSolBalance, MINIMUM_BALANCE_SOL } from '@/lib/solana';
+import { createPumpFunToken, TokenMetadata } from '@/lib/pumpfun';
 
 export default function Templates() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const { publicKey, connected } = useWallet();
+  const wallet = useWallet();
+  const { connection } = useConnection();
+  const [pokemonTemplates, setPokemonTemplates] = useState<PokemonData[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [showLaunchDialog, setShowLaunchDialog] = useState(false);
   
   // Form state
@@ -32,39 +37,67 @@ export default function Templates() {
   const [moves, setMoves] = useState<Move[]>([]);
   const [rarity, setRarity] = useState<Rarity>('Common');
   const [imageUrl, setImageUrl] = useState('');
+  const [twitterLink, setTwitterLink] = useState('');
   
   const [isLaunching, setIsLaunching] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [launchedMonster, setLaunchedMonster] = useState<Monster | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [balance, setBalance] = useState<number | null>(null);
 
   useEffect(() => {
     loadTemplates();
   }, []);
 
+  // Fetch wallet balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (connected && publicKey) {
+        try {
+          const bal = await getWalletBalance(connection, publicKey);
+          setBalance(bal);
+        } catch (error) {
+          console.error('Failed to fetch balance:', error);
+        }
+      } else {
+        setBalance(null);
+      }
+    };
+
+    fetchBalance();
+  }, [connected, publicKey, connection]);
+
   const loadTemplates = async () => {
     setLoading(true);
-    const data = await fetchTemplates();
-    setTemplates(data);
+    try {
+      // Fetch real Pokemon data from PokeAPI
+      const pokemon = await fetchPopularPokemon();
+      setPokemonTemplates(pokemon);
+    } catch (error) {
+      console.error('Failed to load Pokemon templates:', error);
+      toast.error('Failed to load templates');
+    }
     setLoading(false);
   };
 
-  const handleSelectTemplate = (template: Template) => {
-    if (!user) {
-      toast.error('Please sign in to use templates');
-      navigate('/auth');
+  const handleSelectPokemon = (pokemon: PokemonData) => {
+    if (!connected) {
+      toast.error('Please connect your wallet first');
       return;
     }
     
-    setSelectedTemplate(template);
-    setName(template.name);
-    setTicker(template.name.toUpperCase().replace(/\s/g, '').slice(0, 4));
-    setDescription(`A ${template.rarity.toLowerCase()} ${template.type.toLowerCase()} monster with incredible power.`);
-    setType(template.type);
-    setHp(template.hp);
-    setMoves(template.baseMoves);
-    setRarity(template.rarity);
-    setImageUrl(template.imageUrl || '');
+    const pokemonType = pokemon.types[0] as MonsterType || 'Meme';
+    const pokemonRarity: Rarity = pokemon.stats.hp > 100 ? 'Epic' : pokemon.stats.hp > 80 ? 'Rare' : 'Uncommon';
+    
+    setName(pokemon.name);
+    setTicker(pokemon.name.toUpperCase().replace(/\s/g, '').slice(0, 10));
+    setDescription(`${pokemon.name} - A powerful ${pokemonType} type creature with ${pokemon.stats.hp} HP!`);
+    setType(pokemonType);
+    setHp(pokemon.stats.hp);
+    setMoves(pokemon.moves.map(m => ({ name: m.name, damage: m.power })));
+    setRarity(pokemonRarity);
+    setImageUrl(pokemon.imageUrl);
+    setTwitterLink('');
     setShowLaunchDialog(true);
   };
 
@@ -102,9 +135,11 @@ export default function Templates() {
     evolutionStage: 1,
   };
 
+  const hasMinBalance = balance !== null && checkMinimumBalance(balance);
+
   const handleLaunch = async () => {
-    if (!user) {
-      toast.error('Please sign in to launch');
+    if (!connected || !publicKey) {
+      toast.error('Please connect your wallet first');
       return;
     }
     
@@ -113,10 +148,39 @@ export default function Templates() {
       return;
     }
 
+    if (!hasMinBalance) {
+      toast.error(`Insufficient balance. You need at least ${MINIMUM_BALANCE_SOL} SOL.`);
+      return;
+    }
+
     setIsLaunching(true);
     
     try {
-      const newMonster = await createMonster(user.id, {
+      const walletAddress = publicKey.toBase58();
+      
+      // Deploy to pump.fun
+      toast.info('Creating token on Pump.fun...');
+      
+      const tokenMetadata: TokenMetadata = {
+        name,
+        symbol: ticker,
+        description,
+        imageUrl: imageUrl || '/placeholder.svg',
+        twitter: twitterLink || undefined,
+      };
+
+      const deployResult = await createPumpFunToken(connection, wallet, {
+        metadata: tokenMetadata,
+        devBuyAmountSol: 0, // No dev buy for templates
+      });
+
+      if (!deployResult.success) {
+        toast.warning('Pump.fun deployment skipped. Saving locally...');
+      } else {
+        toast.success('Token created on Pump.fun!');
+      }
+
+      const newMonster = await createMonster(walletAddress, {
         name,
         ticker,
         description,
@@ -125,6 +189,8 @@ export default function Templates() {
         imageUrl: imageUrl || '/placeholder.svg',
         moves,
         rarity,
+        mintAddress: deployResult.mintAddress,
+        twitterLink: twitterLink || undefined,
       });
       
       if (newMonster) {
@@ -163,40 +229,55 @@ export default function Templates() {
           <p className="text-muted-foreground">
             Choose from AI-generated monster templates and customize before launch
           </p>
+          
+          {!connected && (
+            <div className="mt-4 flex items-center gap-4">
+              <CustomWalletButton />
+              <span className="text-sm text-muted-foreground">Connect wallet to use templates</span>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {templates.map((template) => (
-            <div key={template.id} className="group">
-              <PokemonCard
-                monster={{
-                  name: template.name,
-                  type: template.type,
-                  hp: template.hp,
-                  imageUrl: template.imageUrl,
-                  moves: template.baseMoves,
-                  rarity: template.rarity,
-                  evolutionStage: 1,
-                }}
-                size="md"
-                onClick={() => handleSelectTemplate(template)}
-              />
-              <div className="mt-3 text-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  size="sm"
-                  className="btn-glow"
-                  onClick={() => handleSelectTemplate(template)}
-                >
-                  Use Template
-                </Button>
+          {pokemonTemplates.map((pokemon) => {
+            const pokemonType = pokemon.types[0] as MonsterType || 'Meme';
+            const pokemonRarity: Rarity = pokemon.stats.hp > 100 ? 'Epic' : pokemon.stats.hp > 80 ? 'Rare' : 'Uncommon';
+            
+            return (
+              <div key={pokemon.id} className="group">
+                <PokemonCard
+                  monster={{
+                    name: pokemon.name,
+                    type: pokemonType,
+                    hp: pokemon.stats.hp,
+                    imageUrl: pokemon.imageUrl,
+                    moves: pokemon.moves.map(m => ({ name: m.name, damage: m.power })),
+                    rarity: pokemonRarity,
+                    evolutionStage: 1,
+                  }}
+                  size="md"
+                  onClick={() => handleSelectPokemon(pokemon)}
+                />
+                <div className="mt-3 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    size="sm"
+                    className="btn-glow"
+                    onClick={() => handleSelectPokemon(pokemon)}
+                  >
+                    Use as Template
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {templates.length === 0 && (
+        {pokemonTemplates.length === 0 && !loading && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No templates available yet.</p>
+            <p className="text-muted-foreground">Failed to load Pokemon templates. Please refresh.</p>
+            <Button className="mt-4" onClick={loadTemplates}>
+              Retry
+            </Button>
           </div>
         )}
       </div>
@@ -213,6 +294,19 @@ export default function Templates() {
           <div className="grid md:grid-cols-2 gap-6 py-4">
             {/* Form */}
             <div className="space-y-4">
+              {/* Balance info */}
+              {balance !== null && (
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                  hasMinBalance 
+                    ? 'bg-green-500/10 border border-green-500/30 text-green-400' 
+                    : 'bg-destructive/10 border border-destructive/30 text-destructive'
+                }`}>
+                  <Wallet className="w-4 h-4" />
+                  <span className="font-mono text-sm">{formatSolBalance(balance)} SOL</span>
+                  {!hasMinBalance && <AlertCircle className="w-4 h-4" />}
+                </div>
+              )}
+              
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>Monster Name</Label>
@@ -267,17 +361,22 @@ export default function Templates() {
               <Button
                 className="w-full btn-glow"
                 onClick={handleLaunch}
-                disabled={isLaunching}
+                disabled={isLaunching || !hasMinBalance}
               >
                 {isLaunching ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Launching...
                   </>
+                ) : !hasMinBalance ? (
+                  <>
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    Insufficient Balance
+                  </>
                 ) : (
                   <>
                     <Rocket className="w-4 h-4 mr-2" />
-                    Launch on Pump
+                    Launch on Pump.fun
                   </>
                 )}
               </Button>

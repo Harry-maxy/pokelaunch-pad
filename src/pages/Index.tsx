@@ -17,13 +17,27 @@ const Index = () => {
 
   const loadMonsters = async () => {
     setLoading(true);
-    const data = await fetchMonsters('all');
+    // Use enrichWithLiveData=true to fetch real-time data from pump.fun for first 12 tokens
+    const data = await fetchMonsters('all', true);
     setMonsters(data);
     setLoading(false);
   };
 
-  const legendaryCount = monsters.filter(m => m.evolutionStage === 4).length;
+  // Calculate all stats
+  const legendaryCount = monsters.filter(m => m.rarity === 'Legendary').length;
+  const epicCount = monsters.filter(m => m.rarity === 'Epic').length;
+  const rareCount = monsters.filter(m => m.rarity === 'Rare').length;
   const creatorCount = new Set(monsters.map(m => m.creatorWallet)).size;
+  
+  // Type breakdown
+  const typeStats = {
+    Fire: monsters.filter(m => m.type === 'Fire').length,
+    Water: monsters.filter(m => m.type === 'Water').length,
+    Electric: monsters.filter(m => m.type === 'Electric').length,
+    Grass: monsters.filter(m => m.type === 'Grass').length,
+    Shadow: monsters.filter(m => m.type === 'Shadow').length,
+    Meme: monsters.filter(m => m.type === 'Meme').length,
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,19 +85,38 @@ const Index = () => {
           </div>
 
           {/* Stats Row */}
-          <div className="flex items-center gap-6 py-4 border-t border-b border-border">
+          <div className="flex flex-wrap items-center gap-4 py-4 border-t border-b border-border">
             <div className="flex items-center gap-2">
               <span className="font-display text-xl font-bold text-primary">{monsters.length}</span>
               <span className="text-sm text-muted-foreground">Pokes</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-display text-xl font-bold text-legendary-gold">{legendaryCount}</span>
+              <span className="font-display text-xl font-bold text-yellow-500">{legendaryCount}</span>
               <span className="text-sm text-muted-foreground">Legendary</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-display text-xl font-bold text-purple-400">{epicCount}</span>
+              <span className="text-sm text-muted-foreground">Epic</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-display text-xl font-bold text-blue-400">{rareCount}</span>
+              <span className="text-sm text-muted-foreground">Rare</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-display text-xl font-bold text-accent">{creatorCount}</span>
               <span className="text-sm text-muted-foreground">Creators</span>
             </div>
+          </div>
+          
+          {/* Type Stats */}
+          <div className="flex flex-wrap gap-2 py-3">
+            {Object.entries(typeStats).map(([type, count]) => (
+              <div key={type} className="flex items-center gap-1 px-2 py-1 rounded-full bg-secondary/50 text-xs">
+                <span>{type === 'Fire' ? '🔥' : type === 'Water' ? '💧' : type === 'Electric' ? '⚡' : type === 'Grass' ? '🌿' : type === 'Shadow' ? '🌙' : '😂'}</span>
+                <span className="text-muted-foreground">{type}:</span>
+                <span className="font-bold">{count}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
