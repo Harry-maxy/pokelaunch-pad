@@ -189,6 +189,20 @@ export function Sidebar() {
         </div>
       )}
 
+      {/* Twitter/X Link and Copy CA */}
+      <div className="p-4 border-t border-sidebar-border space-y-2">
+        <CopyCAButton />
+        <a 
+          href="https://x.com/pokemonlaunch" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-secondary/50 hover:bg-secondary text-foreground transition-colors"
+        >
+          <Twitter className="w-4 h-4" />
+          <span className="text-sm font-medium">Follow @pokemonlaunch</span>
+        </a>
+      </div>
+
       {/* Footer Info */}
       <div className="p-4 text-center border-t border-sidebar-border">
         <p className="text-[10px] text-muted-foreground">
@@ -196,5 +210,27 @@ export function Sidebar() {
         </p>
       </div>
     </aside>
+  );
+}
+
+function CopyCAButton() {
+  const [copied, setCopied] = useState(false);
+  const CA = "ВАША_КОНТРАКТНАЯ_АДРЕСА_ЗДЕСЬ"; // Replace with actual CA
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(CA);
+    setCopied(true);
+    toast.success('CA copied to clipboard!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 transition-colors"
+    >
+      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+      <span className="text-sm font-bold">$PokeLaunch</span>
+    </button>
   );
 }
