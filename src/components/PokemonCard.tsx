@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface PokemonCardProps {
   monster: Partial<Monster>;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   interactive?: boolean;
   onClick?: () => void;
 }
@@ -46,6 +46,7 @@ const TYPE_INNER_GLOW: Record<MonsterType, string> = {
 };
 
 const SIZE_CLASSES = {
+  xs: 'w-40 h-60',
   sm: 'w-48 h-72',
   md: 'w-64 h-96',
   lg: 'w-80 h-[480px]',
