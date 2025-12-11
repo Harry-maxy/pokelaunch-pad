@@ -46,8 +46,8 @@ const TYPE_INNER_GLOW: Record<MonsterType, string> = {
 };
 
 const SIZE_CLASSES = {
-  xs: 'w-32 h-48',
-  sm: 'w-40 h-60',
+  xs: 'w-40 h-60',
+  sm: 'w-48 h-72',
   md: 'w-56 h-80',
   lg: 'w-72 h-[420px]',
 };
@@ -176,11 +176,11 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
       {/* Footer */}
       <div className={cn(
         "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card via-card/95 to-transparent",
-        isSmall ? "px-2 py-1.5" : "px-3 py-2"
+        isSmall ? "px-2 py-2" : "px-3 py-2"
       )}>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
           {monster.marketCap !== undefined && (
-            <div className={isSmall ? "text-[10px]" : "text-xs"}>
+            <div className={isSmall ? "text-[11px]" : "text-xs"}>
               <span className="text-muted-foreground">MC </span>
               <span className="font-mono font-bold text-accent">
                 {formatMarketCap(monster.marketCap)}
