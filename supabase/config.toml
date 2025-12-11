@@ -1,1 +1,4 @@
 project_id = "jsfkmgyniktoolapalxo"
+
+[functions.pump-proxy]
+verify_jwt = false
