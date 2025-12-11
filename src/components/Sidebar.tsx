@@ -3,10 +3,7 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { 
   Home, 
-  PlusCircle, 
-  Download, 
   Layout, 
-  Trophy, 
   Sparkles,
   Wallet,
   Zap,
@@ -17,7 +14,7 @@ import {
   Copy,
   Check
 } from 'lucide-react';
-import { Twitter } from 'lucide-react';
+import { XIcon } from '@/components/XIcon';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -189,17 +186,17 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* Twitter/X Link and Copy CA */}
+      {/* X Link and Copy CA */}
       <div className="p-4 border-t border-sidebar-border space-y-2">
         <CopyCAButton />
         <a 
           href="https://x.com/pokemonlaunch" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-secondary/50 hover:bg-secondary text-foreground transition-colors"
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors"
         >
-          <Twitter className="w-4 h-4" />
-          <span className="text-sm font-medium">Follow @pokemonlaunch</span>
+          <XIcon className="w-4 h-4" />
+          <span className="text-sm font-bold">Follow on X</span>
         </a>
       </div>
 
