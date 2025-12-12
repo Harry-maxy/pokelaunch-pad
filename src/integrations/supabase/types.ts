@@ -26,6 +26,7 @@ export type Database = {
           id: string
           image_url: string | null
           market_cap: number | null
+          mint_address: string | null
           moves: Json | null
           name: string
           price_change_24h: number | null
@@ -47,6 +48,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           market_cap?: number | null
+          mint_address?: string | null
           moves?: Json | null
           name: string
           price_change_24h?: number | null
@@ -68,6 +70,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           market_cap?: number | null
+          mint_address?: string | null
           moves?: Json | null
           name?: string
           price_change_24h?: number | null
