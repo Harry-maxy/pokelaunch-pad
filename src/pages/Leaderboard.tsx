@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchMonsters } from '@/lib/api';
-import { formatMarketCap, Monster } from '@/types/monster';
+import { formatMarketCap, formatPrice, Monster } from '@/types/monster';
 import { Button } from '@/components/ui/button';
 import { Trophy, Crown, TrendingUp, Calendar, ArrowUpDown, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -22,7 +22,8 @@ export default function Leaderboard() {
 
   const loadMonsters = async () => {
     setLoading(true);
-    const data = await fetchMonsters('trending');
+    // Use enrichWithLiveData=true to fetch real-time prices
+    const data = await fetchMonsters('trending', true);
     setMonsters(data);
     setLoading(false);
   };
@@ -136,6 +137,7 @@ export default function Leaderboard() {
                   <th className="text-left p-4 font-display text-sm text-muted-foreground">Monster</th>
                   <th className="text-left p-4 font-display text-sm text-muted-foreground">Type</th>
                   <th className="text-left p-4 font-display text-sm text-muted-foreground">Evolution</th>
+                  <th className="text-right p-4 font-display text-sm text-muted-foreground">Price</th>
                   <th className="text-right p-4 font-display text-sm text-muted-foreground">Market Cap</th>
                   <th className="text-left p-4 font-display text-sm text-muted-foreground">Creator</th>
                   <th className="text-left p-4 font-display text-sm text-muted-foreground">Launched</th>
@@ -190,13 +192,22 @@ export default function Leaderboard() {
                       {getEvolutionBadge(monster.evolutionStage)}
                     </td>
                     <td className="p-4 text-right">
+                      {monster.priceUsd && monster.priceUsd > 0 ? (
+                        <span className="font-mono font-bold text-accent">
+                          {formatPrice(monster.priceUsd)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right">
                       <span className="font-mono font-bold text-primary">
                         {formatMarketCap(monster.marketCap)}
                       </span>
-                      {monster.priceChange24h !== undefined && (
+                      {monster.priceChange24h !== undefined && monster.priceChange24h !== 0 && (
                         <span className={cn(
                           'text-xs ml-2',
-                          monster.priceChange24h >= 0 ? 'text-primary' : 'text-destructive'
+                          monster.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'
                         )}>
                           {monster.priceChange24h >= 0 ? '↑' : '↓'}
                           {Math.abs(monster.priceChange24h).toFixed(1)}%

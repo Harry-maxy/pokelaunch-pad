@@ -200,10 +200,10 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
 
       {/* Footer - Rarity Stars and Market Cap */}
       <div className={cn(
-        "shrink-0 border-t border-border/30 bg-secondary/30",
-        isSmall ? "mx-1.5 mb-1.5 px-2 py-2 rounded-md" : "mx-2 mb-2 px-3 py-2.5 rounded-md"
+        "shrink-0 border-t border-border/30 bg-gradient-to-b from-secondary/40 to-secondary/20",
+        isSmall ? "mx-1.5 mb-1.5 px-1.5 py-1.5 rounded-md" : "mx-2 mb-2 px-3 py-2 rounded-md"
       )}>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-1">
           {/* Rarity Stars */}
           <div className="flex gap-0.5">
             {Array.from({ length: RARITY_STARS[rarity] }).map((_, i) => (
@@ -211,7 +211,7 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
                 key={i}
                 className={cn(
                   'drop-shadow-lg',
-                  isSmall ? 'w-3 h-3' : 'w-3.5 h-3.5',
+                  isSmall ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5',
                   isLegendary 
                     ? 'text-yellow-400 fill-yellow-400' 
                     : isEpic
@@ -225,13 +225,13 @@ export function PokemonCard({ monster, size = 'md', interactive = true, onClick 
           </div>
           
           {/* Market Cap */}
-          {monster.marketCap !== undefined && (
+          {monster.marketCap !== undefined && monster.marketCap > 0 && (
             <div className={cn(
-              "bg-background/50 rounded px-2 py-0.5 border border-border/50",
-              isSmall ? "text-[10px]" : "text-xs"
+              "flex items-center gap-0.5 bg-background/50 rounded border border-border/50",
+              isSmall ? "px-1.5 py-0.5" : "px-2 py-0.5"
             )}>
-              <span className="text-muted-foreground">MC </span>
-              <span className="font-mono font-bold text-accent">
+              <span className={cn("text-muted-foreground", isSmall ? "text-[8px]" : "text-[10px]")}>MC</span>
+              <span className={cn("font-mono font-bold text-accent", isSmall ? "text-[9px]" : "text-xs")}>
                 {formatMarketCap(monster.marketCap)}
               </span>
             </div>

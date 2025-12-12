@@ -55,3 +55,4 @@ export function isHtml2CanvasAvailable(): boolean {
   return typeof html2canvas !== 'undefined';
 }
 
+

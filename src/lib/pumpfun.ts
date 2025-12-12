@@ -1,6 +1,7 @@
 import { Connection, Keypair, VersionedTransaction } from '@solana/web3.js';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import { supabase } from '@/integrations/supabase/client';
+import { getTokenPriceFromDexScreener, getTokenHolders } from './dexscreener';
 
 export interface TokenMetadata {
   name: string;
@@ -215,7 +216,8 @@ export interface PumpFunTokenData {
   complete: boolean;
   virtualSolReserves?: number;
   virtualTokenReserves?: number;
-  // Add these fields if available from API
+  // Price and market data
+  priceUsd?: number;
   volume24h?: number;
   priceChange24h?: number;
   holders?: number;
@@ -223,38 +225,109 @@ export interface PumpFunTokenData {
 
 export async function getPumpFunTokenInfo(mintAddress: string): Promise<PumpFunTokenData | null> {
   try {
+    // Try pump.fun API first
     const response = await fetch(`https://frontend-api.pump.fun/coins/${mintAddress}`);
     
-    if (!response.ok) {
-      return null;
+    let pumpData: PumpFunTokenData | null = null;
+    
+    if (response.ok) {
+      const data = await response.json();
+      pumpData = {
+        name: data.name,
+        symbol: data.symbol,
+        description: data.description,
+        imageUri: data.image_uri,
+        marketCap: data.usd_market_cap || 0,
+        bondingCurve: data.bonding_curve,
+        totalSupply: data.total_supply || 1000000000,
+        website: data.website,
+        twitter: data.twitter,
+        telegram: data.telegram,
+        creator: data.creator,
+        createdTimestamp: data.created_timestamp,
+        raydiumPool: data.raydium_pool,
+        complete: data.complete || false,
+        virtualSolReserves: data.virtual_sol_reserves,
+        virtualTokenReserves: data.virtual_token_reserves,
+        volume24h: data.volume_24h,
+        priceChange24h: data.price_change_24h,
+        holders: data.holder_count,
+      };
     }
 
-    const data = await response.json();
+    // Always try DexScreener for latest price data
+    console.log('📊 Fetching price from DexScreener...');
+    const dexData = await getTokenPriceFromDexScreener(mintAddress);
     
-    return {
-      name: data.name,
-      symbol: data.symbol,
-      description: data.description,
-      imageUri: data.image_uri,
-      marketCap: data.usd_market_cap || 0,
-      bondingCurve: data.bonding_curve,
-      totalSupply: data.total_supply || 1000000000,
-      website: data.website,
-      twitter: data.twitter,
-      telegram: data.telegram,
-      creator: data.creator,
-      createdTimestamp: data.created_timestamp,
-      raydiumPool: data.raydium_pool,
-      complete: data.complete || false,
-      virtualSolReserves: data.virtual_sol_reserves,
-      virtualTokenReserves: data.virtual_token_reserves,
-      // These might not be in the API response, will be undefined
-      volume24h: data.volume_24h,
-      priceChange24h: data.price_change_24h,
-      holders: data.holder_count,
-    };
+    if (dexData && dexData.priceUsd > 0) {
+      console.log('✅ Got price from DexScreener:', dexData.priceUsd, 'MC:', dexData.marketCap);
+      
+      if (pumpData) {
+        // Merge DexScreener data with pump.fun data
+        pumpData.priceUsd = dexData.priceUsd;
+        pumpData.marketCap = dexData.marketCap || pumpData.marketCap;
+        pumpData.volume24h = dexData.volume24h || pumpData.volume24h;
+        pumpData.priceChange24h = dexData.priceChange24h || pumpData.priceChange24h;
+      } else {
+        // Create minimal data from DexScreener
+        pumpData = {
+          name: dexData.name || '',
+          symbol: dexData.symbol || '',
+          description: '',
+          imageUri: '',
+          marketCap: dexData.marketCap,
+          bondingCurve: '',
+          totalSupply: 1000000000,
+          creator: '',
+          createdTimestamp: 0,
+          complete: false,
+          priceUsd: dexData.priceUsd,
+          volume24h: dexData.volume24h,
+          priceChange24h: dexData.priceChange24h,
+        };
+      }
+    }
+
+    // Try to get holders from Solscan if not available
+    if (pumpData && (!pumpData.holders || pumpData.holders === 0)) {
+      console.log('📊 Fetching holders from Solscan...');
+      const holders = await getTokenHolders(mintAddress);
+      if (holders && holders > 0) {
+        console.log('✅ Got holders from Solscan:', holders);
+        pumpData.holders = holders;
+      }
+    }
+
+    return pumpData;
   } catch (error) {
     console.error('Error fetching token info:', error);
+    
+    // Last resort: try DexScreener directly
+    try {
+      const dexData = await getTokenPriceFromDexScreener(mintAddress);
+      if (dexData) {
+        const holders = await getTokenHolders(mintAddress);
+        return {
+          name: dexData.name || '',
+          symbol: dexData.symbol || '',
+          description: '',
+          imageUri: '',
+          marketCap: dexData.marketCap,
+          bondingCurve: '',
+          totalSupply: 1000000000,
+          creator: '',
+          createdTimestamp: 0,
+          complete: false,
+          priceUsd: dexData.priceUsd,
+          volume24h: dexData.volume24h,
+          priceChange24h: dexData.priceChange24h,
+          holders: holders || undefined,
+        };
+      }
+    } catch (e) {
+      console.error('DexScreener fallback also failed:', e);
+    }
+    
     return null;
   }
 }

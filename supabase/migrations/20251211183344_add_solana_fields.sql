@@ -14,3 +14,4 @@ CREATE INDEX IF NOT EXISTS idx_monsters_creator_wallet ON public.monsters(creato
 COMMENT ON COLUMN public.monsters.mint_address IS 'Solana token mint address from Pump.fun deployment';
 COMMENT ON COLUMN public.monsters.twitter_link IS 'Twitter/X link for the monster project';
 
+

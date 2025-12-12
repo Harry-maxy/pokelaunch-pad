@@ -88,11 +88,11 @@ const Index = () => {
       </div>
 
       {/* Deployed Tokens Grid */}
-      <section className="p-6">
+      <section className="px-2 sm:px-3 lg:px-4 py-2">
         {loading ? <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground">Loading pokes...</p>
-          </div> : monsters.length > 0 ? <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          </div> : monsters.length > 0 ? <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-0.5">
             {monsters.map(monster => <PokemonCard key={monster.id} monster={monster} size="xs" interactive onClick={() => navigate(`/poke/${monster.id}`)} />)}
           </div> : <div className="text-center py-16">
             <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">

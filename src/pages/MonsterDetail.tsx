@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { fetchMonster } from '@/lib/api';
+import { cn } from '@/lib/utils';
 import { getPumpFunTokenInfo, PumpFunTokenData } from '@/lib/pumpfun';
 import { PokemonCard } from '@/components/PokemonCard';
 import { Button } from '@/components/ui/button';
-import { Monster, formatMarketCap } from '@/types/monster';
+import { Monster, formatMarketCap, formatPrice } from '@/types/monster';
 import { 
   ArrowLeft, 
   ExternalLink, 
@@ -36,6 +37,74 @@ export default function MonsterDetail() {
   const [copiedMint, setCopiedMint] = useState(false);
   const [copiedCreator, setCopiedCreator] = useState(false);
   const [chartSource, setChartSource] = useState<'dexscreener' | 'birdeye' | 'geckoterminal'>('dexscreener');
+  const [chartSize, setChartSize] = useState({ width: 100, height: 400 }); // width in %, height in px
+  const [isResizing, setIsResizing] = useState<'left' | 'right' | 'vertical' | 'corner' | null>(null);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [startSize, setStartSize] = useState({ width: 100, height: 400 });
+  const chartRef = useRef<HTMLDivElement>(null);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  
+  const handleResizeStart = useCallback((e: React.MouseEvent, direction: 'left' | 'right' | 'vertical' | 'corner') => {
+    e.preventDefault();
+    setIsResizing(direction);
+    setStartPos({ x: e.clientX, y: e.clientY });
+    setStartSize({ ...chartSize });
+  }, [chartSize]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing || !chartContainerRef.current) return;
+      
+      const containerWidth = chartContainerRef.current.getBoundingClientRect().width;
+      const deltaX = e.clientX - startPos.x;
+      
+      // Left edge - drag left to make wider, drag right to make narrower
+      if (isResizing === 'left') {
+        const newWidthPx = (startSize.width / 100) * containerWidth - deltaX;
+        const newWidthPercent = (newWidthPx / containerWidth) * 100;
+        setChartSize(prev => ({ 
+          ...prev, 
+          width: Math.max(50, Math.min(100, newWidthPercent)) 
+        }));
+      }
+      
+      // Right edge - drag right to make wider
+      if (isResizing === 'right' || isResizing === 'corner') {
+        const newWidthPx = (startSize.width / 100) * containerWidth + deltaX;
+        const newWidthPercent = (newWidthPx / containerWidth) * 100;
+        setChartSize(prev => ({ 
+          ...prev, 
+          width: Math.max(50, Math.min(100, newWidthPercent)) 
+        }));
+      }
+      
+      if (isResizing === 'vertical' || isResizing === 'corner') {
+        const deltaY = e.clientY - startPos.y;
+        setChartSize(prev => ({ 
+          ...prev, 
+          height: Math.max(200, Math.min(800, startSize.height + deltaY)) 
+        }));
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(null);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = (isResizing === 'left' || isResizing === 'right') ? 'ew-resize' : isResizing === 'vertical' ? 'ns-resize' : 'nwse-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing, startPos, startSize]);
   
   useEffect(() => {
     if (id) {
@@ -132,6 +201,17 @@ export default function MonsterDetail() {
   const displayVolume = pumpData?.volume24h !== undefined ? pumpData.volume24h : monster.volume24h || 0;
   const displayHolders = pumpData?.holders !== undefined ? pumpData.holders : monster.holders || 0;
   const displayPriceChange = pumpData?.priceChange24h !== undefined ? pumpData.priceChange24h : monster.priceChange24h || 0;
+  const displayPrice = pumpData?.priceUsd || 0;
+
+  // Enriched monster for the card display
+  const enrichedMonster = {
+    ...monster,
+    marketCap: displayMarketCap,
+    priceUsd: displayPrice,
+    volume24h: displayVolume,
+    holders: displayHolders,
+    priceChange24h: displayPriceChange,
+  };
 
   return (
     <div className="min-h-screen bg-background bg-pattern py-8 px-6">
@@ -150,7 +230,7 @@ export default function MonsterDetail() {
           {/* Card Display */}
           <div className="flex flex-col items-center">
             <div className="animate-float">
-              <PokemonCard monster={monster} size="lg" interactive={false} />
+              <PokemonCard monster={enrichedMonster} size="lg" interactive={false} />
             </div>
             
             <div className="flex gap-3 mt-6 flex-wrap justify-center">
@@ -231,6 +311,37 @@ export default function MonsterDetail() {
               </div>
             )}
 
+            {/* Price Banner */}
+            {displayPrice > 0 && (
+              <div className="bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-xl p-4 border border-primary/30">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                      <TrendingUp className="w-4 h-4" />
+                      <span className="text-sm">Token Price</span>
+                      <span className="text-xs bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded">LIVE</span>
+                    </div>
+                    <p className="font-display text-3xl font-bold text-primary">
+                      {formatPrice(displayPrice)}
+                    </p>
+                  </div>
+                  {displayPriceChange !== 0 && (
+                    <div className={cn(
+                      "text-right px-3 py-2 rounded-lg",
+                      displayPriceChange >= 0 
+                        ? "bg-green-500/10 text-green-400" 
+                        : "bg-red-500/10 text-red-400"
+                    )}>
+                      <span className="text-xs">24h</span>
+                      <p className="font-mono font-bold text-lg">
+                        {displayPriceChange >= 0 ? '+' : ''}{displayPriceChange.toFixed(1)}%
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-card rounded-xl p-4 border border-border">
@@ -284,7 +395,7 @@ export default function MonsterDetail() {
             </div>
 
             {/* Price Chart */}
-            <div className="bg-card rounded-xl p-6 border border-border">
+            <div className="bg-card rounded-xl p-6 border border-border" ref={chartRef}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
                   <LineChart className="w-5 h-5" />
@@ -303,7 +414,7 @@ export default function MonsterDetail() {
               </div>
               
               {monster.mintAddress ? (
-                <div className="space-y-3">
+                <div className="space-y-3" ref={chartContainerRef}>
                   {/* Chart Source Selector */}
                   <div className="flex gap-2 flex-wrap">
                     <Button
@@ -332,36 +443,83 @@ export default function MonsterDetail() {
                     </Button>
                   </div>
                   
-                  {/* Chart Embed */}
-                  <div className="relative w-full rounded-lg overflow-hidden border border-border/50" style={{ paddingBottom: '65%' }}>
-                    {chartSource === 'dexscreener' && (
-                      <iframe
-                        src={`https://dexscreener.com/solana/${monster.mintAddress}?embed=1&theme=dark&trades=0&info=0`}
-                        className="absolute top-0 left-0 w-full h-full"
-                        title="DexScreener Chart"
-                        loading="lazy"
-                      />
-                    )}
-                    {chartSource === 'birdeye' && (
-                      <iframe
-                        src={`https://birdeye.so/tv-widget/${monster.mintAddress}?chain=solana&viewMode=pair&chartInterval=15&chartType=CANDLE&chartTimezone=Europe%2FMoscow&chartLeftToolbar=show&theme=dark`}
-                        className="absolute top-0 left-0 w-full h-full"
-                        title="Birdeye Chart"
-                        loading="lazy"
-                      />
-                    )}
-                    {chartSource === 'geckoterminal' && (
-                      <iframe
-                        src={`https://www.geckoterminal.com/solana/tokens/${monster.mintAddress}?embed=1&info=0&swaps=0`}
-                        className="absolute top-0 left-0 w-full h-full"
-                        title="GeckoTerminal Chart"
-                        loading="lazy"
-                      />
-                    )}
+                  {/* Chart Embed - Resizable */}
+                  <div className="relative">
+                    <div 
+                      className="relative rounded-lg overflow-hidden border border-border/50 ml-auto"
+                      style={{ 
+                        width: `${chartSize.width}%`, 
+                        height: chartSize.height 
+                      }}
+                    >
+                      {chartSource === 'dexscreener' && (
+                        <iframe
+                          src={`https://dexscreener.com/solana/${monster.mintAddress}?embed=1&theme=dark&trades=0&info=0`}
+                          className="absolute top-0 left-0 w-full h-full"
+                          title="DexScreener Chart"
+                          loading="lazy"
+                        />
+                      )}
+                      {chartSource === 'birdeye' && (
+                        <iframe
+                          src={`https://birdeye.so/tv-widget/${monster.mintAddress}?chain=solana&viewMode=pair&chartInterval=15&chartType=CANDLE&chartTimezone=Europe%2FMoscow&chartLeftToolbar=show&theme=dark`}
+                          className="absolute top-0 left-0 w-full h-full"
+                          title="Birdeye Chart"
+                          loading="lazy"
+                        />
+                      )}
+                      {chartSource === 'geckoterminal' && (
+                        <iframe
+                          src={`https://www.geckoterminal.com/solana/tokens/${monster.mintAddress}?embed=1&info=0&swaps=0`}
+                          className="absolute top-0 left-0 w-full h-full"
+                          title="GeckoTerminal Chart"
+                          loading="lazy"
+                        />
+                      )}
+                      
+                      {/* Resize overlay when dragging */}
+                      {isResizing && (
+                        <div className="absolute inset-0 bg-primary/5 z-10" />
+                      )}
+                      
+                      {/* Left resize handle (horizontal) */}
+                      <div 
+                        className="absolute top-0 left-0 w-3 h-full cursor-ew-resize hover:bg-primary/30 transition-colors z-20 group"
+                        onMouseDown={(e) => handleResizeStart(e, 'left')}
+                      >
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-muted-foreground/30 rounded group-hover:bg-primary/60 transition-colors" />
+                      </div>
+                      
+                      {/* Right resize handle (horizontal) */}
+                      <div 
+                        className="absolute top-0 right-0 w-3 h-full cursor-ew-resize hover:bg-primary/30 transition-colors z-20 group"
+                        onMouseDown={(e) => handleResizeStart(e, 'right')}
+                      >
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-muted-foreground/30 rounded group-hover:bg-primary/60 transition-colors" />
+                      </div>
+                      
+                      {/* Bottom resize handle (vertical) */}
+                      <div 
+                        className="absolute bottom-0 left-0 w-full h-3 cursor-ns-resize hover:bg-primary/30 transition-colors z-20 group"
+                        onMouseDown={(e) => handleResizeStart(e, 'vertical')}
+                      >
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1 w-12 bg-muted-foreground/30 rounded group-hover:bg-primary/60 transition-colors" />
+                      </div>
+                      
+                      {/* Corner resize handle (both) */}
+                      <div 
+                        className="absolute bottom-0 right-0 w-5 h-5 cursor-nwse-resize hover:bg-primary/30 transition-colors z-30 rounded-tl"
+                        onMouseDown={(e) => handleResizeStart(e, 'corner')}
+                      >
+                        <svg className="w-full h-full text-muted-foreground/50 hover:text-primary/80" viewBox="0 0 16 16" fill="currentColor">
+                          <path d="M14 16V14H16V16H14ZM14 12V10H16V12H14ZM10 16V14H12V16H10ZM14 8V6H16V8H14ZM6 16V14H8V16H6ZM10 12V10H12V12H10ZM14 4V2H16V4H14ZM6 12V10H8V12H6ZM10 8V6H12V8H10ZM2 16V14H4V16H2Z" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                   
                   <p className="text-xs text-muted-foreground text-center">
-                    Chart may take a few minutes to load for new tokens
+                    Drag edges to resize • Chart may take a few minutes to load for new tokens
                   </p>
                 </div>
               ) : (

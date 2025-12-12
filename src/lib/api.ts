@@ -94,12 +94,14 @@ async function enrichPokeWithPumpData(poke: Poke): Promise<Poke> {
   try {
     const pumpData = await getPumpFunTokenInfo(poke.mintAddress);
     if (pumpData) {
+      // Always prefer live data over database values
       return {
         ...poke,
-        marketCap: pumpData.marketCap || poke.marketCap,
-        volume24h: pumpData.volume24h || poke.volume24h,
-        holders: pumpData.holders || poke.holders,
-        priceChange24h: pumpData.priceChange24h || poke.priceChange24h,
+        marketCap: pumpData.marketCap > 0 ? pumpData.marketCap : poke.marketCap,
+        volume24h: pumpData.volume24h !== undefined ? pumpData.volume24h : poke.volume24h,
+        holders: pumpData.holders !== undefined && pumpData.holders > 0 ? pumpData.holders : poke.holders,
+        priceChange24h: pumpData.priceChange24h !== undefined ? pumpData.priceChange24h : poke.priceChange24h,
+        priceUsd: pumpData.priceUsd !== undefined && pumpData.priceUsd > 0 ? pumpData.priceUsd : poke.priceUsd,
       };
     }
   } catch (error) {
@@ -189,7 +191,7 @@ export async function createPoke(
   const initialMarketCap = Math.floor(Math.random() * 50000) + 5000;
   const pokeId = crypto.randomUUID();
   
-  // Build insert object - only core fields that exist in original schema
+  // Build insert object with all fields including mint_address
   const insertData = {
     id: pokeId,
     name: pokeData.name,
@@ -209,6 +211,8 @@ export async function createPoke(
     volume_24h: Math.floor(Math.random() * 10000) + 500,
     holders: Math.floor(Math.random() * 100) + 10,
     price_change_24h: (Math.random() - 0.3) * 50,
+    mint_address: pokeData.mintAddress || null,
+    twitter_link: pokeData.twitterLink || null,
   };
   
   const { data, error } = await supabase
@@ -259,4 +263,24 @@ export async function fetchPokesByCreator(walletAddress: string): Promise<Poke[]
   }
   
   return (data as unknown as DbPoke[]).map(dbPokeToPoke);
+}
+
+/**
+ * Update a poke's mint address
+ */
+export async function updatePokeMintAddress(pokeId: string, mintAddress: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('monsters')
+    .update({ 
+      mint_address: mintAddress,
+      pump_url: `https://pump.fun/${mintAddress}`
+    })
+    .eq('id', pokeId);
+  
+  if (error) {
+    console.error('Error updating mint address:', error);
+    return false;
+  }
+  
+  return true;
 }

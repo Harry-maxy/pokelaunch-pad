@@ -56,8 +56,8 @@ export default function Discover() {
   ];
 
   return (
-    <div className="min-h-screen bg-background bg-pattern py-8 px-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background bg-pattern py-4 px-2 sm:px-3 lg:px-4">
+      <div className="w-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -103,12 +103,12 @@ export default function Discover() {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : pokes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-0.5">
             {pokes.map((poke) => (
               <PokemonCard
                 key={poke.id}
                 monster={poke}
-                size="md"
+                size="xs"
                 interactive
                 onClick={() => navigate(`/poke/${poke.id}`)}
               />

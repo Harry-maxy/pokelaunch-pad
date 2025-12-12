@@ -19,3 +19,4 @@ CREATE POLICY "Creators can delete own monsters" ON public.monsters
 -- Make creator_id optional since we're using wallet auth now
 ALTER TABLE public.monsters ALTER COLUMN creator_id DROP NOT NULL;
 
+

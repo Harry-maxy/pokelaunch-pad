@@ -30,6 +30,7 @@ export interface Poke {
   volume24h?: number;
   holders?: number;
   priceChange24h?: number;
+  priceUsd?: number;
   // New fields for Solana integration
   mintAddress?: string;
   twitterLink?: string;
@@ -73,6 +74,22 @@ export function formatMarketCap(value: number): string {
   if (value >= 1000000) return `$${(value / 1000000).toFixed(2)}M`;
   if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
   return `$${value.toFixed(0)}`;
+}
+
+export function formatPrice(value: number): string {
+  if (value === 0) return '$0';
+  if (value >= 1) return `$${value.toFixed(2)}`;
+  if (value >= 0.01) return `$${value.toFixed(4)}`;
+  if (value >= 0.0001) return `$${value.toFixed(6)}`;
+  // For very small values, use scientific-ish notation
+  const str = value.toFixed(10);
+  const match = str.match(/^0\.(0+)(\d+)/);
+  if (match) {
+    const zeros = match[1].length;
+    const digits = match[2].slice(0, 4);
+    return `$0.0(${zeros})${digits}`;
+  }
+  return `$${value.toFixed(8)}`;
 }
 
 export function generateWallet(): string {
