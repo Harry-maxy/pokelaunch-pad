@@ -444,9 +444,9 @@ export default function MonsterDetail() {
                   </div>
                   
                   {/* Chart Embed - Resizable */}
-                  <div className="relative">
+                  <div className="relative flex justify-end">
                     <div 
-                      className="relative rounded-lg overflow-hidden border border-border/50 ml-auto"
+                      className="relative rounded-lg overflow-hidden border border-border/50"
                       style={{ 
                         width: `${chartSize.width}%`, 
                         height: chartSize.height 
