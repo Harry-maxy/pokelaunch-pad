@@ -1,34 +1,22 @@
-import { NavLink } from '@/components/NavLink';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { useEffect, useState } from 'react';
-import { 
-  Home, 
-  Layout, 
-  Sparkles,
-  Wallet,
-  Zap,
-  Search,
-  Crown,
-  Swords,
-  AlertCircle,
-  Copy,
-  Check
-} from 'lucide-react';
-import { XIcon } from '@/components/XIcon';
-import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import logo from '@/assets/logo.svg';
-import { getWalletBalance, shortenAddress, formatSolBalance, MINIMUM_BALANCE_SOL } from '@/lib/solana';
+import { NavLink } from "@/components/NavLink";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useEffect, useState } from "react";
+import { Home, Layout, Sparkles, Wallet, Zap, Search, Crown, Swords, AlertCircle, Copy, Check } from "lucide-react";
+import { XIcon } from "@/components/XIcon";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import logo from "@/assets/logo.svg";
+import { getWalletBalance, shortenAddress, formatSolBalance, MINIMUM_BALANCE_SOL } from "@/lib/solana";
 
 const navItems = [
-  { to: '/', icon: Home, label: 'Home', color: 'hover:text-primary' },
-  { to: '/create', icon: Zap, label: 'Create Poke', color: 'hover:text-accent' },
-  { to: '/discover', icon: Search, label: 'Discover Pokes', color: 'hover:text-type-water' },
-  { to: '/ranking', icon: Crown, label: 'Creator Ranking', color: 'hover:text-legendary-gold' },
-  { to: '/templates', icon: Layout, label: 'Templates', color: 'hover:text-type-electric' },
-  { to: '/battle', icon: Swords, label: 'PokeBattle', color: 'hover:text-type-shadow', badge: 'Soon' },
+  { to: "/", icon: Home, label: "Home", color: "hover:text-primary" },
+  { to: "/create", icon: Zap, label: "Create Poke", color: "hover:text-accent" },
+  { to: "/discover", icon: Search, label: "Discover Pokes", color: "hover:text-type-water" },
+  { to: "/ranking", icon: Crown, label: "Creator Ranking", color: "hover:text-legendary-gold" },
+  { to: "/templates", icon: Layout, label: "Templates", color: "hover:text-type-electric" },
+  { to: "/battle", icon: Swords, label: "PokeBattle", color: "hover:text-type-shadow", badge: "Soon" },
 ];
 
 export function Sidebar() {
@@ -46,13 +34,15 @@ export function Sidebar() {
         try {
           const bal = await getWalletBalance(connection, publicKey);
           setBalance(bal);
-          
+
           // Show warning if balance is low
           if (bal < MINIMUM_BALANCE_SOL) {
-            toast.warning(`Low balance: ${formatSolBalance(bal)} SOL. You need at least ${MINIMUM_BALANCE_SOL} SOL to create tokens.`);
+            toast.warning(
+              `Low balance: ${formatSolBalance(bal)} SOL. You need at least ${MINIMUM_BALANCE_SOL} SOL to create tokens.`,
+            );
           }
         } catch (error) {
-          console.error('Failed to fetch balance:', error);
+          console.error("Failed to fetch balance:", error);
         } finally {
           setIsLoadingBalance(false);
         }
@@ -62,7 +52,7 @@ export function Sidebar() {
     };
 
     fetchBalance();
-    
+
     // Refresh balance every 30 seconds
     const interval = setInterval(fetchBalance, 30000);
     return () => clearInterval(interval);
@@ -70,7 +60,7 @@ export function Sidebar() {
 
   const handleDisconnect = async () => {
     await disconnect();
-    toast.success('Wallet disconnected');
+    toast.success("Wallet disconnected");
   };
 
   const isLowBalance = balance !== null && balance < MINIMUM_BALANCE_SOL;
@@ -80,10 +70,10 @@ export function Sidebar() {
       {/* Logo */}
       <div className="p-5 border-b border-sidebar-border">
         <NavLink to="/" className="flex items-center gap-3 group">
-          <img 
-            src={logo} 
-            alt="PokeLaunch" 
-            className="w-12 h-12 group-hover:animate-pulse-glow transition-all rounded-xl" 
+          <img
+            src={logo}
+            alt="PokeLaunch"
+            className="w-12 h-12 group-hover:animate-pulse-glow transition-all rounded-xl"
           />
           <div>
             <h1 className="font-display font-bold text-xl text-sidebar-foreground">
@@ -101,15 +91,15 @@ export function Sidebar() {
             key={item.to}
             to={item.to}
             className={cn(
-              'flex items-center gap-3 px-4 py-3 rounded-xl text-sidebar-foreground/70',
-              'transition-all duration-200 border border-transparent',
-              item.color
+              "flex items-center gap-3 px-4 py-3 rounded-xl text-sidebar-foreground/70",
+              "transition-all duration-200 border border-transparent",
+              item.color,
             )}
             activeClassName="bg-sidebar-accent text-sidebar-foreground border-primary/30"
           >
             <item.icon className="w-5 h-5" />
             <span className="font-medium flex-1">{item.label}</span>
-            {'badge' in item && item.badge && (
+            {"badge" in item && item.badge && (
               <span className="px-2 py-0.5 rounded-full bg-type-shadow/20 text-type-shadow text-[10px] font-bold">
                 {item.badge}
               </span>
@@ -123,8 +113,8 @@ export function Sidebar() {
         <NavLink
           to="/create"
           className={cn(
-            'flex items-center justify-center gap-2 w-full py-4 rounded-full',
-            'btn-pokemon text-primary-foreground font-bold text-base'
+            "flex items-center justify-center gap-2 w-full py-4 rounded-full",
+            "btn-pokemon text-primary-foreground font-bold text-base",
           )}
         >
           <Sparkles className="w-5 h-5" />
@@ -142,40 +132,31 @@ export function Sidebar() {
                 <Wallet className="w-4 h-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-mono text-foreground truncate">
-                  {shortenAddress(publicKey.toBase58())}
-                </p>
+                <p className="text-xs font-mono text-foreground truncate">{shortenAddress(publicKey.toBase58())}</p>
                 <div className="flex items-center gap-1">
                   {isLoadingBalance ? (
                     <p className="text-[10px] text-muted-foreground">Loading...</p>
                   ) : balance !== null ? (
-                    <p className={cn(
-                      "text-[10px] font-medium",
-                      isLowBalance ? "text-destructive" : "text-neon-cyan"
-                    )}>
+                    <p className={cn("text-[10px] font-medium", isLowBalance ? "text-destructive" : "text-neon-cyan")}>
                       {formatSolBalance(balance)} SOL
                     </p>
                   ) : null}
-                  {isLowBalance && (
-                    <AlertCircle className="w-3 h-3 text-destructive" />
-                  )}
+                  {isLowBalance && <AlertCircle className="w-3 h-3 text-destructive" />}
                 </div>
               </div>
             </div>
-            
+
             {/* Low Balance Warning */}
             {isLowBalance && (
               <div className="px-3 py-2 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-[10px] text-destructive">
-                  Need ≥ {MINIMUM_BALANCE_SOL} SOL to create tokens
-                </p>
+                <p className="text-[10px] text-destructive">Need ≥ {MINIMUM_BALANCE_SOL} SOL to create tokens</p>
               </div>
             )}
-            
+
             {/* Disconnect Button */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-destructive/10"
               onClick={handleDisconnect}
             >
@@ -189,9 +170,9 @@ export function Sidebar() {
       {/* X Link and Copy CA */}
       <div className="p-4 border-t border-sidebar-border space-y-2">
         <CopyCAButton />
-        <a 
-          href="https://x.com/pokemonlaunch" 
-          target="_blank" 
+        <a
+          href="https://x.com/pokemonlaunch"
+          target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors"
         >
@@ -212,12 +193,12 @@ export function Sidebar() {
 
 function CopyCAButton() {
   const [copied, setCopied] = useState(false);
-  const CA = "ВАША_КОНТРАКТНАЯ_АДРЕСА_ЗДЕСЬ"; // Replace with actual CA
+  const CA = "9r3sf9G9PJwugY1zg8sbZbAw4Wt52B22Cjc4EWxVpump"; // Replace with actual CA
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(CA);
     setCopied(true);
-    toast.success('CA copied to clipboard!');
+    toast.success("CA copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
 
