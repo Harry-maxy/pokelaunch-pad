@@ -33,6 +33,7 @@ export type Database = {
           pump_url: string | null
           rarity: Database["public"]["Enums"]["monster_rarity"]
           ticker: string
+          twitter_link: string | null
           type: Database["public"]["Enums"]["monster_type"]
           updated_at: string
           volume_24h: number | null
@@ -55,6 +56,7 @@ export type Database = {
           pump_url?: string | null
           rarity?: Database["public"]["Enums"]["monster_rarity"]
           ticker: string
+          twitter_link?: string | null
           type?: Database["public"]["Enums"]["monster_type"]
           updated_at?: string
           volume_24h?: number | null
@@ -77,6 +79,7 @@ export type Database = {
           pump_url?: string | null
           rarity?: Database["public"]["Enums"]["monster_rarity"]
           ticker?: string
+          twitter_link?: string | null
           type?: Database["public"]["Enums"]["monster_type"]
           updated_at?: string
           volume_24h?: number | null

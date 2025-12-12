@@ -192,7 +192,7 @@ export async function createPoke(
   const pokeId = crypto.randomUUID();
   
   // Build insert object with all fields including mint_address
-  const insertData = {
+  const baseInsertData = {
     id: pokeId,
     name: pokeData.name,
     ticker: pokeData.ticker,
@@ -212,14 +212,31 @@ export async function createPoke(
     holders: Math.floor(Math.random() * 100) + 10,
     price_change_24h: (Math.random() - 0.3) * 50,
     mint_address: pokeData.mintAddress || null,
+  };
+  
+  // Try with twitter_link first
+  const insertDataWithTwitter = {
+    ...baseInsertData,
     twitter_link: pokeData.twitterLink || null,
   };
   
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('monsters')
-    .insert(insertData)
+    .insert(insertDataWithTwitter)
     .select()
     .single();
+  
+  // If failed (possibly due to missing twitter_link column), retry without it
+  if (error) {
+    console.warn('Insert with twitter_link failed, retrying without:', error.message);
+    const result = await supabase
+      .from('monsters')
+      .insert(baseInsertData)
+      .select()
+      .single();
+    data = result.data;
+    error = result.error;
+  }
   
   if (error) {
     console.error('Error creating poke:', error);
